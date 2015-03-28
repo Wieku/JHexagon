@@ -1,6 +1,5 @@
 package net.wieku.jhexagon.api;
 
-import com.badlogic.gdx.math.MathUtils;
 import net.wieku.jhexagon.Main;
 
 /**
@@ -29,7 +28,7 @@ public class Wall {
 	public static float pulseSpeed = 1f;
 
 	public static void updatePulse(){
-		pulseSpeed = Math.max(1f, Math.abs(MathUtils.sinDeg(CurrentMap.currentTime * 180)) * 1.2f);
+		pulseSpeed = Math.max(1f, Math.abs((float)Math.sin(Math.toRadians(CurrentMap.currentTime * 180))) * 1.2f);
 	}
 
 	public void update(float delta){

@@ -83,13 +83,10 @@ public class WallRenderer {
 			if(!wall.visible) continue;
 
 			tmp.set(MathUtils.sin(wall.side / (float)CurrentMap.sides * MathUtils.PI2), MathUtils.cos(wall.side / (float)CurrentMap.sides * MathUtils.PI2)).scl(Math.max(0, wall.position / tmp.len()));
-			//System.out.println("tmp" + tmp);
 			tmp2.set(MathUtils.sin(wall.side / (float)CurrentMap.sides * MathUtils.PI2), MathUtils.cos(wall.side / (float)CurrentMap.sides * MathUtils.PI2)).scl(Math.max(0, (wall.position + wall.thickness) / tmp2.len()));
-			//System.out.println("tmp2" + tmp2);
 			tmp3.set(MathUtils.sin((wall.side + 1) / (float)CurrentMap.sides * MathUtils.PI2), MathUtils.cos((wall.side + 1) / (float)CurrentMap.sides * MathUtils.PI2)).scl(Math.max(0, wall.position / tmp3.len()));
-			//System.out.println("tmp3" + tmp3);
 			tmp4.set(MathUtils.sin((wall.side + 1) / (float)CurrentMap.sides * MathUtils.PI2), MathUtils.cos((wall.side + 1) / (float)CurrentMap.sides * MathUtils.PI2)).scl(Math.max(0, (wall.position + wall.thickness) / tmp4.len()));
-			//System.out.println("tmp4" + tmp4);
+
 			renderer.triangle(tmp.x, tmp.y, tmp2.x, tmp2.y, tmp4.x, tmp4.y);
 			renderer.triangle(tmp4.x, tmp4.y, tmp3.x, tmp3.y, tmp.x, tmp.y);
 
