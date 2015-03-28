@@ -73,12 +73,12 @@ dependencies {
 	def gdx = '1.5.4'
 
 	//LibGDX
-	compile 'com.badlogicgames.gdx:gdx-backend-lwjgl:'+gdx
-	compile 'com.badlogicgames.gdx:gdx:'+gdx
-	compile 'com.badlogicgames.gdx:gdx-platform:'+gdx+':natives-desktop'
-	compile 'com.badlogicgames.gdx:gdx-freetype:'+gdx {
+	compile 'com.badlogicgames.gdx:gdx-backend-lwjgl:'+gdx {
 	  exclude module: 'jlayer'
 	}
+	compile 'com.badlogicgames.gdx:gdx:'+gdx
+	compile 'com.badlogicgames.gdx:gdx-platform:'+gdx+':natives-desktop'
+	compile 'com.badlogicgames.gdx:gdx-freetype:'+gdx
 	compile 'com.badlogicgames.gdx:gdx-freetype-platform:'+gdx+':natives-desktop'
 
 	
