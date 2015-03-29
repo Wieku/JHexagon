@@ -31,7 +31,7 @@ public class Background {
 	public void draw(ShapeRenderer3D renderer, float delta) {
 
 		renderer.identity();
-		renderer.scale(Main.scale, Main.scale, Main.scale);
+		renderer.scale(Game.scale, Game.scale, Game.scale);
 		renderer.begin(ShapeType.Filled);
 
 		if((delta0 += delta) >= 1f/60){

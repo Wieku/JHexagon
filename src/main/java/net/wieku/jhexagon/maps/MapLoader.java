@@ -32,13 +32,13 @@ import java.util.jar.JarFile;
  */
 public class MapLoader {
 	private static final String PLUGIN_PATH = "Maps/";
-	private static final String TEMP_PATH = "Maps/.temp/";
+	public static final String TEMP_PATH = "Maps/.temp/";
 
-	private static Logger log = LoggerFactory.getLogger(MapLoader.class);
+	//private static Logger log = LoggerFactory.getLogger(MapLoader.class);
 
 	public ArrayList<Map> load() {
 		new File(PLUGIN_PATH).mkdirs();
-		log.info("Loading maps");
+		System.out.println("Loading maps");
 		ArrayList<Map> maps = new ArrayList<>();
 
 		File dir = new File(PLUGIN_PATH);
@@ -51,13 +51,13 @@ public class MapLoader {
 				try {
 					jar = new JarFile(file);
 				} catch (IOException e) {
-					log.error("Cannot load " + file.getName());
+					System.err.println("Cannot load " + file.getName());
 					e.printStackTrace();
 					continue;
 				}
 
 				if (jar.getEntry("map.json") == null) {
-					log.error("File: " + file.getName() + " doesn't contain map.json!");
+					System.err.println("File: " + file.getName() + " doesn't contain map.json!");
 					continue;
 				}
 
@@ -66,7 +66,7 @@ public class MapLoader {
 					Gson gson = new GsonBuilder().create();
 					m = gson.fromJson(new InputStreamReader(jar.getInputStream(jar.getEntry("map.json"))), MapJson.class);
 				} catch (IOException e) {
-					log.error("File map.json in mod " + file.getName() + " has wrong syntax!");
+					System.err.println("File map.json in mod " + file.getName() + " has wrong syntax!");
 					e.printStackTrace();
 					continue;
 				}
@@ -89,7 +89,7 @@ public class MapLoader {
 
 				List<Class<?>> interfaces = Arrays.asList(toLoad.getInterfaces());
 				if (!interfaces.contains(MapScript.class)) {
-					log.error("Script of " + m.name + "(" + file.getName() + ") Doesn't implement 'MapScript' interface!");
+					System.err.println("Script of " + m.name + "(" + file.getName() + ") Doesn't implement 'MapScript' interface!");
 					continue;
 				}
 
@@ -105,7 +105,7 @@ public class MapLoader {
 					JarEntry entry = jar.getJarEntry(m.audioFileName);
 
 					if(entry == null) {
-						log.error("Audiofile of " + m.name + "(" + file.getName() + ") not found!");
+						System.err.println("Audiofile of " + m.name + "(" + file.getName() + ") not found!");
 						continue;
 					}
 
@@ -118,7 +118,7 @@ public class MapLoader {
 					is.close();
 
 				} catch (Exception e1) {
-					log.error("Script of " + m.name + "(" + file.getName() + ") couldn't contain custom constructor!");
+					System.err.println("Script of " + m.name + "(" + file.getName() + ") couldn't contain custom constructor!");
 					e1.printStackTrace();
 					continue;
 				}
@@ -129,10 +129,10 @@ public class MapLoader {
 					e.printStackTrace();
 				}
 
-				log.debug("Map " + m.name + " Has been loaded!");
+				System.out.println("Map " + m.name + " Has been loaded!");
 			}
 		}
-		log.info("Loaded " + maps.size() + " maps");
+		System.out.println("Loaded " + maps.size() + " maps");
 		return maps;
 	}
 

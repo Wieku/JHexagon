@@ -17,8 +17,8 @@ public class SkewCamera extends PerspectiveCamera {
 	Vector2 tmp = new Vector2();
 
 	public void updateViewport(int width, int height){
-		viewportWidth = width;
-		viewportHeight = height;
+		viewportWidth = 4;
+		viewportHeight = 3;
 		far = 10000f;
 		near = 0.00001f;
 		fieldOfView = 47f;
@@ -29,9 +29,15 @@ public class SkewCamera extends PerspectiveCamera {
 		currentRotation += rotation;
 		currentRotation = (currentRotation >= 360f ? currentRotation - 360f : currentRotation);
 
-		tmp.set(MathUtils.sin(currentRotation / 360f * MathUtils.PI2), MathUtils.cos(currentRotation / 360f * MathUtils.PI2)).scl(Main.diagonal/2 * (CurrentMap.skew+0.00001f));
+		//tmp.set(MathUtils.sin(currentRotation / 360f * MathUtils.PI2), MathUtils.cos(currentRotation / 360f * MathUtils.PI2)).scl(Main.diagonal/2 * (CurrentMap.skew+0.00001f));
 
-		position.set(tmp.x, Main.diagonal/2, tmp.y);
+		float skw = 40f + 50f * (CurrentMap.maxSkew - CurrentMap.skew - 0.0001f);
+
+		position.set(
+				1000f * MathUtils.cos(skw / 360f * MathUtils.PI2) * MathUtils.cos(currentRotation / 360f * MathUtils.PI2),
+				1000f * MathUtils.sin(skw / 360f * MathUtils.PI2),
+				1000f * MathUtils.cos(skw / 360f * MathUtils.PI2) * MathUtils.sin(currentRotation / 360f * MathUtils.PI2));
+		//position.set(tmp.x, (float) Math.sqrt(tmp.x*tmp.x + tmp.y* tmp.y), tmp.y);
 		lookAt(0, 0, 0);
 		up.set(Vector3.Y);
 		update();

@@ -3,6 +3,6 @@ JHexagon.iml
 JHexagon.ipr
 JHexagon.iws
 out/
-run/
 .gradle/
-
+run/*
+!run/Maps/

@@ -25,7 +25,7 @@ public class Center {
 
 		for(int j=0;j < CurrentMap.layers;++j) {
 			renderer.identity();
-			renderer.scale(Main.scale, Main.scale, Main.scale);
+			renderer.scale(Game.scale, Game.scale, Game.scale);
 			renderer.translate(0, -j * CurrentMap.depth, 0);
 
 			renderer.begin(ShapeType.Filled);

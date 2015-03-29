@@ -46,7 +46,7 @@ public class AudioPlayer {
 		
 		try {
 			player = new GranularSamplePlayer(context, sample = new Sample(file.getAbsolutePath(), Gdx.files.absolute(file.getAbsolutePath()).extension().equals("ogg")?true:false));
-
+			player.pause(true);
 			player.setRate(speedGlide = new Glide(context, 1.0f, 0));
 			player.setPitch(pitchGlide = new Glide(context, 1.0f, 0));
 			player.setEnvelopeType(EnvelopeType.FINE);

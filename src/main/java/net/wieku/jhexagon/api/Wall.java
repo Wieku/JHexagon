@@ -42,7 +42,7 @@ public class Wall {
 
 			//if ((delta0+=delta) >= 1f/60 ){
 
-				position -= speed * CurrentMap.speed * 5 ;// * pulseSpeed;
+				position -= speed * CurrentMap.speed * 5;// * pulseSpeed;
 
 				if (position + thickness <= 0){
 					toRemove = true;
