@@ -7,27 +7,22 @@ import java.util.Random;
  */
 public interface MapScript {
 
-	Random random = new Random();
-
 	public void onInit();
 	public void initEvents();
 	public void nextLevel(int levelNum);
 	public void nextPattern();
 	public void update(float delta);
 
-	default <T> void shuffle(T[] array) {
-
-		Random random = new Random();
-		random.setSeed(System.nanoTime());
-
-		for(int i = array.length; i >= 2; --i){
-			int j = random.nextInt(i);
-
-			T val = array[i];
-
-			array[i] = array[j];
-			array[j] = val;
-
+	default <T> void shuffle(T[] ar) {
+		Random rnd = new Random();
+		rnd.setSeed(System.nanoTime());
+		for (int i = ar.length - 1; i > 0; i--)
+		{
+			int index = rnd.nextInt(i + 1);
+			// Simple swap
+			T a = ar[index];
+			ar[index] = ar[i];
+			ar[i] = a;
 		}
 
 	}

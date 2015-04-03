@@ -13,6 +13,7 @@ public class MapJson {
 	public String description = "";
 	public String songName = "";
 	public String songAuthor = "";
+	public String pack = "default";
 	public String tags = "";
 	public int[] startTimes = {0};
 }

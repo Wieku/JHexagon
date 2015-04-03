@@ -58,14 +58,12 @@ public class Player {
 			for(Wall wall : CurrentMap.wallTimeline.getObjects()){
 
 				if((dir == -1 && Intersector.isPointInPolygon(wall.vecs, lCh)) || (dir == 1 && Intersector.isPointInPolygon(wall.vecs, rCh))){
-					//System.out.println("rt");
-					//System.out.println(600f*delta);
-					//System.out.println(rot + " " + oldRot);
+
 					rot = oldRot;
 					tmp4.set(0, 0.067f * Main.diagonal).rotate(-rot);
 					lCh.set(0, 0.067f * Main.diagonal).rotate(-(rot+3));
 					rCh.set(0, 0.067f * Main.diagonal).rotate(-(rot-3));
-					//System.out.println(rot + " " + oldRot);
+
 				}
 
 				if(Intersector.isPointInPolygon(wall.vecs, tmp4)){
@@ -79,12 +77,6 @@ public class Player {
 			tmp3.set(0, 0.06f * Main.diagonal).rotate(-rot+6);
 			lCh.set(0, 0.067f * Main.diagonal).rotate(-(rot+3));
 			rCh.set(0, 0.067f * Main.diagonal).rotate(-(rot-3));
-			/*tmp.set(MathUtils.sin(rot / 360f * MathUtils.PI2), MathUtils.cos(rot / 360f * MathUtils.PI2)).scl(0.067f * Main.diagonal);
-
-			tmp2.set(MathUtils.sin((rot - 6f) / 360f  * MathUtils.PI2), MathUtils.cos((rot - 5f) / 360f  * MathUtils.PI2)).scl(0.06f * Main.diagonal);
-
-			tmp3.set(MathUtils.sin((rot + 6f) / 360f  * MathUtils.PI2), MathUtils.cos((rot + 5f) / 360f  * MathUtils.PI2)).scl(0.06f * Main.diagonal);*/
-
 
 			this.delta  -= 0.016666668f;
 		}

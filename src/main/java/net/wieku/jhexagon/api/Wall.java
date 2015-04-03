@@ -12,25 +12,18 @@ public class Wall extends TimelineObject{
 
 	public int side;
 	public float thickness;
-	public float show;
 	public float speed;
 	public float position;
 
 	private float delta0;
 	public boolean visible = false;
-	//public boolean toRemove = false;
 
-	public Vector2 tmp = new Vector2();
-	public Vector2 tmp2 = new Vector2();
-	public Vector2 tmp3 = new Vector2();
-	public Vector2 tmp4 = new Vector2();
-
+	public Vector2 tmp = new Vector2(), tmp2 = new Vector2(), tmp3 = new Vector2(), tmp4 = new Vector2();
 	public Array<Vector2> vecs = new Array<>();
 
-	public Wall(int side, float thickness, float show, float speed) {
+	public Wall(int side, float thickness, float speed) {
 		this.side = side;
 		this.thickness = thickness;
-		this.show = show;
 		this.speed = speed;
 		vecs.add(tmp);
 		vecs.add(tmp2);
@@ -47,7 +40,7 @@ public class Wall extends TimelineObject{
 	@Override
 	public void update(float delta){
 
-		if((delta0+=delta) >= 1f/60){
+		if((delta0 += delta) >= 1f / 60){
 
 			if(!visible){
 				position = Main.diagonal;
@@ -59,13 +52,14 @@ public class Wall extends TimelineObject{
 			if (position + thickness <= 0){
 				setToRemove(true);
 			}
+
 			float angle1 = side / (float) CurrentMap.sides * 360f;
 			float angle2 = (side + 1) / (float) CurrentMap.sides * 360f;
 
-			tmp.set(0, Math.max(0, position)*pulseSpeed).rotate(-angle1);
-			tmp2.set(0, Math.max(0, position + thickness)*pulseSpeed).rotate(-angle1);
-			tmp3.set(0, Math.max(0, position)*pulseSpeed).rotate(-angle2);
-			tmp4.set(0, Math.max(0, position + thickness)*pulseSpeed).rotate(-angle2);
+			tmp.set(0, Math.max(0, position) * pulseSpeed).rotate(-angle1);
+			tmp2.set(0, Math.max(0, position + thickness) * pulseSpeed).rotate(-angle1);
+			tmp3.set(0, Math.max(0, position) * pulseSpeed).rotate(-angle2);
+			tmp4.set(0, Math.max(0, position + thickness) * pulseSpeed).rotate(-angle2);
 
 			delta0 = 0;
 		}

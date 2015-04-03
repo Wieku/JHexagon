@@ -847,42 +847,42 @@ public class ShapeRenderer3D implements Disposable {
 			check(ShapeType.Line, ShapeType.Filled, segments * 2 + 2);
 			for (int i = 0; i < segments; i++) {
 				renderer.color(color);
-				renderer.vertex(x + cx, y + cy, 0);
+				renderer.vertex(x + cx, 0, y + cy);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
 				renderer.color(color);
-				renderer.vertex(x + cx, y + cy, 0);
+				renderer.vertex(x + cx, 0, y + cy);
 			}
 			// Ensure the last segment is identical to the first.
 			renderer.color(color);
-			renderer.vertex(x + cx, y + cy, 0);
+			renderer.vertex(x + cx, 0, y + cy);
 		} else {
 			check(ShapeType.Line, ShapeType.Filled, segments * 3 + 3);
 			segments--;
 			for (int i = 0; i < segments; i++) {
 				renderer.color(color);
-				renderer.vertex(x, y, 0);
+				renderer.vertex(x, 0, y);
 				renderer.color(color);
-				renderer.vertex(x + cx, y + cy, 0);
+				renderer.vertex(x + cx, 0, y + cy);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
 				renderer.color(color);
-				renderer.vertex(x + cx, y + cy, 0);
+				renderer.vertex(x + cx, 0, y + cy);
 			}
 			// Ensure the last segment is identical to the first.
 			renderer.color(color);
-			renderer.vertex(x, y, 0);
+			renderer.vertex(x, 0, y);
 			renderer.color(color);
-			renderer.vertex(x + cx, y + cy, 0);
+			renderer.vertex(x + cx, 0, y + cy);
 		}
 
 		float temp = cx;
 		cx = radius;
 		cy = 0;
 		renderer.color(color);
-		renderer.vertex(x + cx, y + cy, 0);
+		renderer.vertex(x + cx, 0, y + cy);
 	}
 
 	/** Calls {@link #ellipse(float, float, float, float, int)} by estimating the number of segments needed for a smooth ellipse. */

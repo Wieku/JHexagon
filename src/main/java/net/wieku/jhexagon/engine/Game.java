@@ -45,6 +45,7 @@ public class Game implements Screen{
 
 	Label fps;
 	Label time;
+	Label message;
 
 	int width, height;
 
@@ -70,6 +71,10 @@ public class Game implements Screen{
 		time.layout();
 		stage.addActor(time);
 
+		message = new Label("", GUIHelper.getLabelStyle(new Color(0.9f, 0.9f, 0.9f, 1), 35));
+		message.layout();
+		stage.addActor(message);
+
 		try {
 			audioPlayer = new AudioPlayer(new File(MapLoader.TEMP_PATH + map.info.audioTempName));
 			audioPlayer.setVolume(0.2f);
@@ -84,6 +89,8 @@ public class Game implements Screen{
 				public void onBeatHigh() {
 				}
 			});
+			map.script.onInit();
+			map.script.initEvents();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -99,7 +106,7 @@ public class Game implements Screen{
 	float delta;
 	float delta0;
 	float delta1;
-
+	float delta2;
 	float fastRotate = 0f;
 
 	@Override
@@ -107,8 +114,11 @@ public class Game implements Screen{
 		Gdx.gl20.glClearColor(0, 0, 0, 1);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
-		if(!player.dead)
+		if(!player.dead){
 			CurrentMap.wallTimeline.update(delta8);
+			CurrentMap.eventTimeline.update(delta8);
+		}
+
 
 		if(!player.dead)
 			CurrentMap.currentTime += Gdx.graphics.getDeltaTime();
@@ -127,77 +137,69 @@ public class Game implements Screen{
 			delta1 = 0;
 		}
 
+
 		this.delta += Gdx.graphics.getDeltaTime();
 
 		while (this.delta >= (1f / 60)) {
 
-			if(!player.dead){
-				/*Iterator<Wall> i = CurrentMap.wallObjects.iterator();
+			if(CurrentMap.currentText != null){
 
-				while(i.hasNext()){
-					Wall wall = i.next();
+				if(!CurrentMap.currentText.visible){
+					message.setText(CurrentMap.currentText.text.toUpperCase());
+					message.pack();
+					CurrentMap.currentText.visible = true;
+				}
 
-					wall.update(1f/60);
-
-					if(wall.toRemove)
-						i.remove();
-
-				}*/
-				Wall.updatePulse();
+				if((delta2 += 1f / 60) >= CurrentMap.currentText.duration){
+					CurrentMap.currentText = null;
+					message.setText("");
+					message.pack();
+					delta2 = 0;
+				}
 			}
 
-			if(CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides){
+			if (CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides) {
 				CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
 				CurrentMap.wallTimeline.wait(1f);
 				CurrentMap.mustChangeSides = false;
 			}
 
-			if(CurrentMap.wallTimeline.isAllSpawned() && !CurrentMap.mustChangeSides){
+			if (CurrentMap.wallTimeline.isAllSpawned() && !CurrentMap.mustChangeSides) {
 				map.script.nextPattern();
 			}
 
-			/*if(CurrentMap.wallTimeline.isEmpty()){
-				CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
+			if (!player.dead) {
+				Wall.updatePulse();
+			} else {
 
-				Patterns.t_wait(100);
-				Patterns.pMirrorSpiral(MathUtils.random(3, 6), 0);
-				Patterns.pBarrageSpiral(MathUtils.random(0, 3), 1, 1);
-				Patterns.pBarrageSpiral(MathUtils.random(0, 2), 1.2f, 2);
-				Patterns.pBarrageSpiral(2, 0.7f, 1);
-				Patterns.pInverseBarrage(0);
-				Patterns.pTunnel(MathUtils.random(2, 3));
-				Patterns.pMirrorWallStrip(1, 0);
-				Patterns.pWallExVortex(0, 1, 1);
-				Patterns.pDMBarrageSpiral(MathUtils.random(4, 7), 0.4f, 1);
-				Patterns.pRandomBarrage(MathUtils.random(2, 4), 2.25f);
-			}*/
-
-			if(!player.dead)
-				camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
-			else{
-				scale = 1;
 				if(CurrentMap.rotationSpeed < 0){
-					CurrentMap.rotationSpeed = Math.min(-0.04f, CurrentMap.rotationSpeed + 0.002f);
+					CurrentMap.rotationSpeed = Math.min(-0.02f, CurrentMap.rotationSpeed + 0.002f);
 				} else if(CurrentMap.rotationSpeed > 0) {
-					CurrentMap.rotationSpeed = Math.max(0.04f, CurrentMap.rotationSpeed - 0.002f);
+					CurrentMap.rotationSpeed = Math.max(0.02f, CurrentMap.rotationSpeed - 0.002f);
 				}
 
-				camera.orbit(CurrentMap.rotationSpeed * 360f / 60);
 				if (audioPlayer != null && !audioPlayer.hasEnded()) {
 					audioPlayer.stop();
 				}
 			}
 
+
+			camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
 			fastRotate = Math.max(0, fastRotate - 1f);
 			if(fastRotate == 0) CurrentMap.isFastRotation = false;
 
+
+
 			scale = Math.max(scale - 0.01f, 1f);
+
+
 
 			inc = (delta0 == 0 ? 1 : (delta0 == CurrentMap.skewTime ? -1 : inc));
 			delta0 += 1f/60 * inc;
 			delta0 = Math.min(CurrentMap.skewTime, Math.max(delta0, 0));
 			float percent = delta0 / CurrentMap.skewTime;
 			CurrentMap.skew = CurrentMap.minSkew + (CurrentMap.maxSkew - CurrentMap.minSkew) * percent;
+
 
 
 			fps.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
@@ -227,6 +229,7 @@ public class Game implements Screen{
 		center.draw(renderer, Gdx.graphics.getDeltaTime());
 		player.draw(renderer, Gdx.graphics.getDeltaTime());
 
+		message.setPosition((stage.getWidth() - message.getWidth())/2, (stage.getHeight() - message.getHeight()) * 2.5f / 3);
 
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
@@ -243,19 +246,13 @@ public class Game implements Screen{
 	}
 
 	@Override
-	public void pause() {
-
-	}
+	public void pause() {}
 
 	@Override
-	public void resume() {
-
-	}
+	public void resume() {}
 
 	@Override
-	public void hide() {
-
-	}
+	public void hide() {}
 
 	@Override
 	public void dispose() {

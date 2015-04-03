@@ -1,6 +1,7 @@
 package net.wieku.jhexagon.api;
 
 import net.wieku.jhexagon.engine.timeline.Timeline;
+import net.wieku.jhexagon.engine.timeline.TimelineRunnable;
 
 import java.util.ArrayList;
 
@@ -36,17 +37,36 @@ public abstract class CurrentMap {
 
 	/**3d settings */
 	public static int layers = 6;
-	public static float depth = 1.4f;
+	public static float depth = 1.6f;
 	public static float skew = 0f;
 	public static float minSkew = 0f;
 	public static float maxSkew = 1f;
 	public static float skewTime = 5f;
 
-	//public static ArrayList<Wall> wallObjects = new ArrayList<>();
+	public static Timeline<Wall> wallTimeline = new Timeline<>();
+	public static Timeline<TimelineRunnable> eventTimeline = new Timeline<>();
 
-	public static Timeline<Wall> wallTimeline = new Timeline<Wall>();
-	//public static Timeline<Runnable> eventTimeline = new Timeline<Runnable>();
 
+	public void reset(){
+		wallTimeline.reset();
+		eventTimeline.resetAll();
+	}
+
+	public static class TextInfo {
+		public String text;
+		public float duration;
+		public boolean visible = false;
+		public TextInfo(String text, float duration) {
+			this.text = text;
+			this.duration = duration;
+		}
+	}
+
+	public static TextInfo currentText = null;
+
+	public static void pushText(String text, float duration){
+		CurrentMap.currentText = new TextInfo(text, duration);
+	}
 
 	/**
 	 *

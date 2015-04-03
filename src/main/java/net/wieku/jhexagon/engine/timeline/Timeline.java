@@ -1,7 +1,6 @@
 package net.wieku.jhexagon.engine.timeline;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.PriorityQueue;
 
 /**
@@ -9,9 +8,8 @@ import java.util.PriorityQueue;
  */
 public class Timeline <T extends TimelineObject> {
 
-
-	float currenttime;
-	float delaytime;
+	float currentTime;
+	float delayTime;
 
 	class QueueObject {
 		Float time;
@@ -29,16 +27,13 @@ public class Timeline <T extends TimelineObject> {
 
 	ArrayList<T> update = new ArrayList<>();
 
-
-	public Timeline(){
-
-	}
+	public Timeline() {}
 
 	public void update(float delta){
-		currenttime+=delta;
-		if(delaytime < currenttime) delaytime = currenttime;
+		currentTime += delta;
+		if(delayTime < currentTime) delayTime = currentTime;
 
-		while(!queue.isEmpty() && queue.peek().time <= currenttime){
+		while(!queue.isEmpty() && queue.peek().time <= currentTime) {
 			update.add(queue.poll().object);
 		}
 
@@ -58,11 +53,11 @@ public class Timeline <T extends TimelineObject> {
 	}
 
 	public void wait(float seconds){
-		delaytime+=seconds;
+		delayTime +=seconds;
 	}
 
 	public void submit(T object){
-		queue.add(new QueueObject(delaytime, object));
+		queue.add(new QueueObject(delayTime, object));
 	}
 
 	public boolean isAllSpawned(){
@@ -89,4 +84,11 @@ public class Timeline <T extends TimelineObject> {
 	public void resetSpawned(){
 		update.clear();
 	}
+
+	public void reset() {
+		resetAll();
+		currentTime = 0f;
+		delayTime = 0f;
+	}
+
 }

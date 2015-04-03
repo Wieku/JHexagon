@@ -1,9 +1,6 @@
 package net.wieku.jhexagon.engine;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import net.wieku.jhexagon.Main;
 import net.wieku.jhexagon.api.CurrentMap;
 import net.wieku.jhexagon.api.Wall;
 import net.wieku.jhexagon.utils.ShapeRenderer3D;
@@ -25,13 +22,10 @@ public class WallRenderer {
 		for(int j = 0; j< CurrentMap.layers; ++j) {
 			renderer.identity();
 			renderer.translate(0, -j * CurrentMap.depth, 0);
-			//renderer.scale(Wall.pulseSpeed, Wall.pulseSpeed, Wall.pulseSpeed);
 			renderer.begin(ShapeType.Filled);
 			renderer.setColor(shadow);
 
-			for(int i = 0; i < walls.size(); ++i){
-
-				Wall wall = walls.get(i);
+			for(Wall wall : walls){
 
 				if(!wall.visible) continue;
 
@@ -50,13 +44,10 @@ public class WallRenderer {
 
 	public void drawWalls(ShapeRenderer3D renderer, ArrayList<Wall> walls){
 
-		//renderer.scale(Wall.pulseSpeed, Wall.pulseSpeed, Wall.pulseSpeed);
 		renderer.begin(ShapeType.Filled);
 		renderer.setColor(CurrentMap.walls.r, CurrentMap.walls.g, CurrentMap.walls.b, CurrentMap.walls.a);
 
-		for(int i = 0; i < walls.size(); ++i){
-
-			Wall wall = walls.get(i);
+		for(Wall wall : walls){
 
 			if(!wall.visible) continue;
 
@@ -66,7 +57,6 @@ public class WallRenderer {
 		}
 
 		renderer.end();
-
 		renderer.identity();
 
 	}

@@ -14,12 +14,7 @@ import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
  */
 public class Background {
 
-	public Background(){
-
-		CurrentMap.colors.add(new HColor(217f/255,162f/255,200f/255, 1, 247f/255,192f/255,230f/255, 1));
-		CurrentMap.colors.add(new HColor(1, 1, 1, 1));
-
-	}
+	public Background(){}
 
 	Vector2 tmp = new Vector2();
 	Vector2 tmp2 = new Vector2();
@@ -51,7 +46,7 @@ public class Background {
 			if(CurrentMap.colors.size() > 0){
 				HColor col = CurrentMap.colors.get(((int)i + CurrentMap.colorOffset) % CurrentMap.colors.size());
 				tmpC.set(col.r, col.g, col.b, col.a);
-				if(i+1==CurrentMap.sides && CurrentMap.sides % 2 ==1)
+				if(i+1==CurrentMap.sides && CurrentMap.sides % 2 == 1)
 					tmpC.lerp(Color.GRAY, 0.5f);
 				renderer.setColor(tmpC);
 			} else {

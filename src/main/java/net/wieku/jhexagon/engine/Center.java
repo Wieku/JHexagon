@@ -1,5 +1,6 @@
 package net.wieku.jhexagon.engine;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -29,20 +30,16 @@ public class Center {
 			renderer.translate(0, -j * CurrentMap.depth, 0);
 
 			renderer.begin(ShapeType.Filled);
+			renderer.setColor(this.shadow);
 
 			for (float i = 0; i < CurrentMap.sides; ++i) {
 
-				renderer.setColor(this.shadow);
-
-				tmp.set(MathUtils.sin(i / CurrentMap.sides * MathUtils.PI2), MathUtils.cos(i / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
-
-				tmp2.set(MathUtils.sin((i - 1) / CurrentMap.sides * MathUtils.PI2), MathUtils.cos((i - 1) / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
+				tmp.set(0, Main.diagonal * 0.05f).rotate(i / CurrentMap.sides * -360f);
+				tmp2.set(0, Main.diagonal * 0.05f).rotate((i - 1) / CurrentMap.sides * -360f);
 
 				renderer.triangle(0, 0, tmp.x, tmp.y, tmp2.x, tmp2.y);
-
-				renderer.setColor(this.shadow);
-
-				renderer.rectLine(tmp, tmp2, 2);
+				renderer.circle(tmp.x, tmp.y, 4);
+				renderer.rectLine(tmp, tmp2, 8);
 
 			}
 
@@ -65,15 +62,14 @@ public class Center {
 				renderer.setColor(Color.WHITE);
 			}
 
-			tmp.set(MathUtils.sin(i / CurrentMap.sides * MathUtils.PI2), MathUtils.cos(i / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
-
-			tmp2.set(MathUtils.sin((i - 1) / CurrentMap.sides * MathUtils.PI2), MathUtils.cos((i - 1) / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
+			tmp.set(0, Main.diagonal * 0.05f).rotate(i / CurrentMap.sides * -360f);
+			tmp2.set(0, Main.diagonal * 0.05f).rotate((i - 1) / CurrentMap.sides * -360f);
 
 			renderer.triangle(0, 0, tmp.x, tmp.y, tmp2.x, tmp2.y);
-
 			renderer.setColor(CurrentMap.walls.r, CurrentMap.walls.g, CurrentMap.walls.b, CurrentMap.walls.a);
 
-			renderer.rectLine(tmp, tmp2, 2);
+			renderer.circle(tmp.x, tmp.y, 4);
+			renderer.rectLine(tmp, tmp2, 8);
 
 		}
 
