@@ -29,15 +29,13 @@ public class SkewCamera extends PerspectiveCamera {
 		currentRotation += rotation;
 		currentRotation = (currentRotation >= 360f ? currentRotation - 360f : currentRotation);
 
-		//tmp.set(MathUtils.sin(currentRotation / 360f * MathUtils.PI2), MathUtils.cos(currentRotation / 360f * MathUtils.PI2)).scl(Main.diagonal/2 * (CurrentMap.skew+0.00001f));
-
 		float skw = 40f + 50f * (CurrentMap.maxSkew - CurrentMap.skew - 0.0001f);
 
 		position.set(
 				1000f * MathUtils.cos(skw / 360f * MathUtils.PI2) * MathUtils.cos(currentRotation / 360f * MathUtils.PI2),
 				1000f * MathUtils.sin(skw / 360f * MathUtils.PI2),
 				1000f * MathUtils.cos(skw / 360f * MathUtils.PI2) * MathUtils.sin(currentRotation / 360f * MathUtils.PI2));
-		//position.set(tmp.x, (float) Math.sqrt(tmp.x*tmp.x + tmp.y* tmp.y), tmp.y);
+
 		lookAt(0, 0, 0);
 		up.set(Vector3.Y);
 		update();

@@ -102,20 +102,24 @@ public class MapLoader {
 
 					m.audioTempName = Files.hash(file, Hashing.sha1()).toString();
 
-					JarEntry entry = jar.getJarEntry(m.audioFileName);
+					if(!new File(TEMP_PATH+m.audioTempName).exists()){
+						JarEntry entry = jar.getJarEntry(m.audioFileName);
 
-					if(entry == null) {
-						System.err.println("Audiofile of " + m.name + "(" + file.getName() + ") not found!");
-						continue;
+						if(entry == null) {
+							System.err.println("Audiofile of " + m.name + "(" + file.getName() + ") not found!");
+							continue;
+						}
+
+						InputStream is = jar.getInputStream(entry); // get the input stream
+						FileOutputStream fos = new java.io.FileOutputStream(new File(TEMP_PATH+m.audioTempName));
+						while (is.available() > 0) {
+							fos.write(is.read());
+						}
+						fos.close();
+						is.close();
 					}
 
-					InputStream is = jar.getInputStream(entry); // get the input stream
-					FileOutputStream fos = new java.io.FileOutputStream(new File(TEMP_PATH+m.audioTempName));
-					while (is.available() > 0) {
-						fos.write(is.read());
-					}
-					fos.close();
-					is.close();
+
 
 				} catch (Exception e1) {
 					System.err.println("Script of " + m.name + "(" + file.getName() + ") couldn't contain custom constructor!");

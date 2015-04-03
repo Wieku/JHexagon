@@ -25,7 +25,6 @@ public class Background {
 	Vector2 tmp2 = new Vector2();
 	Color tmpC = new Color();
 
-	float delta0;
 	float delta1;
 
 	public void draw(ShapeRenderer3D renderer, float delta) {
@@ -34,10 +33,7 @@ public class Background {
 		renderer.scale(Game.scale, Game.scale, Game.scale);
 		renderer.begin(ShapeType.Filled);
 
-		if((delta0 += delta) >= 1f/60){
-			CurrentMap.colors.forEach(o -> o.update(1f/60));
-			delta0 = 0;
-		}
+		CurrentMap.colors.forEach(o -> o.update(delta));
 
 		if((delta1 += delta) >= CurrentMap.colorSwitch){
 
@@ -62,8 +58,8 @@ public class Background {
 				renderer.setColor(1, 1, 1, 1);
 			}
 
-			tmp.set(MathUtils.sin(i / CurrentMap.sides * MathUtils.PI2), MathUtils.cos(i / CurrentMap.sides * MathUtils.PI2)).scl(Main.diagonal * 20);
-			tmp2.set(MathUtils.sin((i - 1) / CurrentMap.sides * MathUtils.PI2), MathUtils.cos((i - 1) / CurrentMap.sides * MathUtils.PI2)).scl(Main.diagonal * 20);
+			tmp.set(0, Main.diagonal * 20).rotate(i / CurrentMap.sides * -360f);
+			tmp2.set(0, Main.diagonal * 20).rotate((i - 1) / CurrentMap.sides * -360f);
 
 			renderer.triangle(0, 0, tmp.x, tmp.y, tmp2.x, tmp2.y);
 

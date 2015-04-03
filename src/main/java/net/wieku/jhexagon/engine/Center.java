@@ -34,9 +34,9 @@ public class Center {
 
 				renderer.setColor(this.shadow);
 
-				tmp.set(MathUtils.sin(i / CurrentMap.sides * MathUtils.PI2), MathUtils.cos(i / CurrentMap.sides * MathUtils.PI2)).scl(0.04f * Main.diagonal);
+				tmp.set(MathUtils.sin(i / CurrentMap.sides * MathUtils.PI2), MathUtils.cos(i / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
 
-				tmp2.set(MathUtils.sin((i - 1) / CurrentMap.sides * MathUtils.PI2), MathUtils.cos((i - 1) / CurrentMap.sides * MathUtils.PI2)).scl(0.04f * Main.diagonal);
+				tmp2.set(MathUtils.sin((i - 1) / CurrentMap.sides * MathUtils.PI2), MathUtils.cos((i - 1) / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
 
 				renderer.triangle(0, 0, tmp.x, tmp.y, tmp2.x, tmp2.y);
 
@@ -65,9 +65,9 @@ public class Center {
 				renderer.setColor(Color.WHITE);
 			}
 
-			tmp.set(MathUtils.sin(i / CurrentMap.sides * MathUtils.PI2), MathUtils.cos(i / CurrentMap.sides * MathUtils.PI2)).scl(0.04f * Main.diagonal);
+			tmp.set(MathUtils.sin(i / CurrentMap.sides * MathUtils.PI2), MathUtils.cos(i / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
 
-			tmp2.set(MathUtils.sin((i - 1) / CurrentMap.sides * MathUtils.PI2), MathUtils.cos((i - 1) / CurrentMap.sides * MathUtils.PI2)).scl(0.04f * Main.diagonal);
+			tmp2.set(MathUtils.sin((i - 1) / CurrentMap.sides * MathUtils.PI2), MathUtils.cos((i - 1) / CurrentMap.sides * MathUtils.PI2)).scl(0.05f * Main.diagonal);
 
 			renderer.triangle(0, 0, tmp.x, tmp.y, tmp2.x, tmp2.y);
 

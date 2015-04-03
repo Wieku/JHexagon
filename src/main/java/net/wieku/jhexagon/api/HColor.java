@@ -42,14 +42,13 @@ public class HColor {
 			delta0 += delta * inc;
 			delta0 = Math.min(CurrentMap.colorPulse, Math.max(delta0, 0));
 
-
 			float percent = delta0 / CurrentMap.colorPulse;
 
 			r = pr + percent * (pr - fr);
 			g = pg + percent * (pg - fg);
 			b = pb + percent * (pb - fb);
 			a = pa + percent * (pa - fa);
-			
+
 			if (r < 0)
 				r = 0;
 			else if (r > 1) r = 1;

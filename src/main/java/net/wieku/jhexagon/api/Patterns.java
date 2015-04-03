@@ -58,7 +58,7 @@ public abstract class Patterns {
 	}
 
 	//cWall: creates a wall with the common THICKNESS
-	public static void cWall(int mSide){ CurrentMap.wallObjects.add(new Wall(mSide, THICKNESS, delay(), 1f)); }
+	public static void cWall(int mSide){ CurrentMap.wallTimeline.submit(new Wall(mSide, THICKNESS, delay(), 1f)); }
 
 	//oWall: creates a wall opposite to the mSide passed
 	public static void oWall(int mSide){ cWall(mSide + getHalfSides()); }
@@ -292,7 +292,7 @@ public abstract class Patterns {
 		THICKNESS = myThickness;
 
 		for (int i = 0; i < mTimes; ++i) {
-			CurrentMap.wallObjects.add(new Wall(startSide, myThickness + 5 * CurrentMap.speed * delay, delay(), 1f));
+			CurrentMap.wallTimeline.submit(new Wall(startSide, myThickness + 5 * CurrentMap.speed * delay, delay(), 1f));
 
 			cBarrage(startSide + loopDir);
 			t_wait(delay);
@@ -305,14 +305,12 @@ public abstract class Patterns {
 	private static float delay = 0f;
 
 	public static float delay(){
-		float newDelay = delay;
-		//delay = 0f;
-		return newDelay;
+		return delay;
 	}
 
 	public static void t_wait(float delay){
-		//System.out.println(delay);
-		Patterns.delay += delay / 60;
+		Patterns.delay += delay /60;
+		CurrentMap.wallTimeline.wait(delay / 60);
 	}
 
 }

@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import net.beadsproject.beads.ugens.GranularSamplePlayer;
 import net.wieku.jhexagon.api.CurrentMap;
 import net.wieku.jhexagon.api.Patterns;
 import net.wieku.jhexagon.api.Wall;
@@ -17,6 +16,7 @@ import net.wieku.jhexagon.engine.camera.SkewCamera;
 import net.wieku.jhexagon.maps.Map;
 import net.wieku.jhexagon.maps.MapLoader;
 import net.wieku.jhexagon.sound.AudioPlayer;
+import net.wieku.jhexagon.sound.BeatListener;
 import net.wieku.jhexagon.utils.GUIHelper;
 import net.wieku.jhexagon.utils.ShapeRenderer3D;
 
@@ -74,6 +74,16 @@ public class Game implements Screen{
 			audioPlayer = new AudioPlayer(new File(MapLoader.TEMP_PATH + map.info.audioTempName));
 			audioPlayer.setVolume(0.2f);
 			audioPlayer.play();
+			audioPlayer.setBeatListener(new BeatListener() {
+				@Override
+				public void onBeatLow() {
+					scale = (!player.dead ? Math.max(scale, 1.2f) : 1f);
+				}
+
+				@Override
+				public void onBeatHigh() {
+				}
+			});
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -95,11 +105,15 @@ public class Game implements Screen{
 	@Override
 	public void render(float delta8) {
 		Gdx.gl20.glClearColor(0, 0, 0, 1);
-		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
+		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
-		CurrentMap.currentTime += Gdx.graphics.getDeltaTime();
+		if(!player.dead)
+			CurrentMap.wallTimeline.update(delta8);
 
-		if((delta1+=Gdx.graphics.getDeltaTime())>=CurrentMap.levelIncrement){
+		if(!player.dead)
+			CurrentMap.currentTime += Gdx.graphics.getDeltaTime();
+
+		if(!player.dead && (delta1+=Gdx.graphics.getDeltaTime())>=CurrentMap.levelIncrement){
 
 			fastRotate = CurrentMap.fastRotate;
 
@@ -108,6 +122,8 @@ public class Game implements Screen{
 			CurrentMap.rotationSpeed *= -1;
 			CurrentMap.rotationSpeed = Math.min(CurrentMap.rotationSpeedMax, Math.max(-CurrentMap.rotationSpeedMax, CurrentMap.rotationSpeed));
 
+			CurrentMap.mustChangeSides = true;
+
 			delta1 = 0;
 		}
 
@@ -115,43 +131,64 @@ public class Game implements Screen{
 
 		while (this.delta >= (1f / 60)) {
 
-			Iterator<Wall> i = CurrentMap.wallObjects.iterator();
+			if(!player.dead){
+				/*Iterator<Wall> i = CurrentMap.wallObjects.iterator();
 
-			while(i.hasNext()){
-				Wall wall = i.next();
+				while(i.hasNext()){
+					Wall wall = i.next();
 
-				wall.update(1f/60);
+					wall.update(1f/60);
 
-				if(wall.toRemove)
-					i.remove();
+					if(wall.toRemove)
+						i.remove();
 
+				}*/
+				Wall.updatePulse();
 			}
 
+			if(CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides){
+				CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
+				CurrentMap.wallTimeline.wait(1f);
+				CurrentMap.mustChangeSides = false;
+			}
 
-			Wall.updatePulse();
+			if(CurrentMap.wallTimeline.isAllSpawned() && !CurrentMap.mustChangeSides){
+				map.script.nextPattern();
+			}
 
-			if(CurrentMap.wallObjects.isEmpty()){
+			/*if(CurrentMap.wallTimeline.isEmpty()){
 				CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
 
-
-				Patterns.t_wait(200);
+				Patterns.t_wait(100);
 				Patterns.pMirrorSpiral(MathUtils.random(3, 6), 0);
 				Patterns.pBarrageSpiral(MathUtils.random(0, 3), 1, 1);
 				Patterns.pBarrageSpiral(MathUtils.random(0, 2), 1.2f, 2);
 				Patterns.pBarrageSpiral(2, 0.7f, 1);
 				Patterns.pInverseBarrage(0);
-				Patterns.pTunnel(MathUtils.random(1, 3));
+				Patterns.pTunnel(MathUtils.random(2, 3));
 				Patterns.pMirrorWallStrip(1, 0);
 				Patterns.pWallExVortex(0, 1, 1);
 				Patterns.pDMBarrageSpiral(MathUtils.random(4, 7), 0.4f, 1);
 				Patterns.pRandomBarrage(MathUtils.random(2, 4), 2.25f);
+			}*/
 
+			if(!player.dead)
+				camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
+			else{
+				scale = 1;
+				if(CurrentMap.rotationSpeed < 0){
+					CurrentMap.rotationSpeed = Math.min(-0.04f, CurrentMap.rotationSpeed + 0.002f);
+				} else if(CurrentMap.rotationSpeed > 0) {
+					CurrentMap.rotationSpeed = Math.max(0.04f, CurrentMap.rotationSpeed - 0.002f);
+				}
+
+				camera.orbit(CurrentMap.rotationSpeed * 360f / 60);
+				if (audioPlayer != null && !audioPlayer.hasEnded()) {
+					audioPlayer.stop();
+				}
 			}
 
-			camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
-
-			fastRotate -= 0.5f;
-			fastRotate = Math.max(0, fastRotate);
+			fastRotate = Math.max(0, fastRotate - 1f);
 			if(fastRotate == 0) CurrentMap.isFastRotation = false;
 
 			scale = Math.max(scale - 0.01f, 1f);
@@ -178,14 +215,14 @@ public class Game implements Screen{
 
 		background.draw(renderer, Gdx.graphics.getDeltaTime());
 
-		wallRenderer.drawWallsShadow(renderer, CurrentMap.wallObjects);
+		wallRenderer.drawWallsShadow(renderer, CurrentMap.wallTimeline.getObjects());
 		center.drawShadow(renderer, Gdx.graphics.getDeltaTime());
 		player.drawShadow(renderer, Gdx.graphics.getDeltaTime());
 
 		renderer.identity();
 		renderer.translate(0, 0, 0);
 
-		wallRenderer.drawWalls(renderer, CurrentMap.wallObjects);
+		wallRenderer.drawWalls(renderer, CurrentMap.wallTimeline.getObjects());
 		renderer.scale(scale, scale, scale);
 		center.draw(renderer, Gdx.graphics.getDeltaTime());
 		player.draw(renderer, Gdx.graphics.getDeltaTime());
