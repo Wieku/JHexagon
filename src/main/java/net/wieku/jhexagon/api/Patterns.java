@@ -300,6 +300,7 @@ public abstract class Patterns {
 		}
 			
 		THICKNESS = oldThickness;
+		t_wait(delay);
 	}
 
 	public static void t_wait(float delay){

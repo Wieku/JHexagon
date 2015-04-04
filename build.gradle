@@ -59,7 +59,7 @@ dependencies {
 	//API
 	//compile project(':api')
 
-	compile fileTree(dir: 'lib', include: ['*.jar'])	
+	//compile fileTree(dir: 'lib', include: ['*.jar'])	
 	compile 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.0.0'
 	//compile 'com.google.inject:guice:4.0-beta5'
 	compile 'com.typesafe:config:1.2.1'
@@ -73,9 +73,7 @@ dependencies {
 	def gdx = '1.5.4'
 
 	//LibGDX
-	compile 'com.badlogicgames.gdx:gdx-backend-lwjgl:'+gdx {
-	  exclude module: 'jlayer'
-	}
+	compile 'com.badlogicgames.gdx:gdx-backend-lwjgl:'+gdx
 	compile 'com.badlogicgames.gdx:gdx:'+gdx
 	compile 'com.badlogicgames.gdx:gdx-platform:'+gdx+':natives-desktop'
 	compile 'com.badlogicgames.gdx:gdx-freetype:'+gdx

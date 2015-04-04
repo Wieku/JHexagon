@@ -19,7 +19,7 @@ public abstract class CurrentMap {
 
 	public static float difficulty = 1f;
 	public static float levelIncrement = 15f;
-	public static float speed = 2.65f * 0.6f;
+	public static float speed = 2.65f ;
 	public static float currentTime = 0f;
 
 	/** sides */
@@ -47,11 +47,49 @@ public abstract class CurrentMap {
 	public static Timeline<TimelineRunnable> eventTimeline = new Timeline<>();
 
 
-	public void reset(){
+	public static void reset(){
 		wallTimeline.reset();
-		eventTimeline.resetAll();
+		eventTimeline.reset();
+		resetValues();
+		//TODO: reset all variables
+
 	}
 
+	private static void resetValues(){
+		rotationSpeed = 0.25f;
+		rotationSpeedMax = 0.5f;
+		rotationIncrement = 0.01f;
+		fastRotate = 70f;
+		isFastRotation = false;
+		
+		difficulty = 1f;
+		levelIncrement = 15f;
+		speed = 1f ;
+		currentTime = 0f;
+		
+		/** sides */
+		sides = 6;
+		minSides = 5;
+		maxSides = 7;
+		mustChangeSides = false;
+		
+		/**colors*/
+		colors.clear();
+		colorPulse = 3f;
+		colorOffset = 0;
+		colorSwitch = 1f;
+		walls = new HColor(0, 0, 1, 1);
+		
+		/**3d settings */
+		layers = 6;
+		depth = 1.6f;
+		skew = 0f;
+		minSkew = 0f;
+		maxSkew = 1f;
+		skewTime = 5f;
+	}
+	
+	
 	public static class TextInfo {
 		public String text;
 		public float duration;
@@ -67,6 +105,103 @@ public abstract class CurrentMap {
 	public static void pushText(String text, float duration){
 		CurrentMap.currentText = new TextInfo(text, duration);
 	}
+
+	public static void setRotationSpeed(float rotationSpeed) {
+		CurrentMap.rotationSpeed = rotationSpeed;
+	}
+
+	public static void setRotationSpeedMax(float rotationSpeedMax) {
+		CurrentMap.rotationSpeedMax = rotationSpeedMax;
+	}
+
+	public static void setRotationIncrement(float rotationIncrement) {
+		CurrentMap.rotationIncrement = rotationIncrement;
+	}
+
+	public static void setFastRotate(float fastRotate) {
+		CurrentMap.fastRotate = fastRotate;
+	}
+
+	public static void setIsFastRotation(boolean isFastRotation) {
+		CurrentMap.isFastRotation = isFastRotation;
+	}
+
+	public static void setDifficulty(float difficulty) {
+		CurrentMap.difficulty = difficulty;
+	}
+
+	public static void setLevelIncrement(float levelIncrement) {
+		CurrentMap.levelIncrement = levelIncrement;
+	}
+
+	public static void setSpeed(float speed) {
+		CurrentMap.speed = speed;
+	}
+
+	public static void setCurrentTime(float currentTime) {
+		CurrentMap.currentTime = currentTime;
+	}
+
+	public static void setSides(int sides) {
+		CurrentMap.sides = sides;
+	}
+
+	public static void setMinSides(int minSides) {
+		CurrentMap.minSides = minSides;
+	}
+
+	public static void setMaxSides(int maxSides) {
+		CurrentMap.maxSides = maxSides;
+	}
+
+	public static void setMustChangeSides(boolean mustChangeSides) {
+		CurrentMap.mustChangeSides = mustChangeSides;
+	}
+
+	public static void setColors(ArrayList<HColor> colors) {
+		CurrentMap.colors = colors;
+	}
+
+	public static void setColorPulse(float colorPulse) {
+		CurrentMap.colorPulse = colorPulse;
+	}
+
+	public static void setColorOffset(int colorOffset) {
+		CurrentMap.colorOffset = colorOffset;
+	}
+
+	public static void setColorSwitch(float colorSwitch) {
+		CurrentMap.colorSwitch = colorSwitch;
+	}
+
+	public static void setWalls(HColor walls) {
+		CurrentMap.walls = walls;
+	}
+
+	public static void setLayers(int layers) {
+		CurrentMap.layers = layers;
+	}
+
+	public static void setDepth(float depth) {
+		CurrentMap.depth = depth;
+	}
+
+	public static void setSkew(float skew) {
+		CurrentMap.skew = skew;
+	}
+
+	public static void setMinSkew(float minSkew) {
+		CurrentMap.minSkew = minSkew;
+	}
+
+	public static void setMaxSkew(float maxSkew) {
+		CurrentMap.maxSkew = maxSkew;
+	}
+
+	public static void setSkewTime(float skewTime) {
+		CurrentMap.skewTime = skewTime;
+	}
+
 
 	/**
 	 *

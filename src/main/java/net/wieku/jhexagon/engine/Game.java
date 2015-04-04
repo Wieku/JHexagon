@@ -1,16 +1,16 @@
 package net.wieku.jhexagon.engine;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import net.wieku.jhexagon.api.CurrentMap;
-import net.wieku.jhexagon.api.Patterns;
 import net.wieku.jhexagon.api.Wall;
 import net.wieku.jhexagon.engine.camera.SkewCamera;
 import net.wieku.jhexagon.maps.Map;
@@ -23,7 +23,6 @@ import net.wieku.jhexagon.utils.ShapeRenderer3D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
-import java.util.Iterator;
 
 /**
  * @author Sebastian Krajewski on 28.03.15.
@@ -32,7 +31,6 @@ public class Game implements Screen{
 
 	Map map;
 	AudioPlayer audioPlayer;
-
 
 	ShapeRenderer3D renderer;
 	SkewCamera camera = new SkewCamera();
@@ -46,6 +44,12 @@ public class Game implements Screen{
 	Label fps;
 	Label time;
 	Label message;
+	Sound levelUp;
+	Sound sides;
+	Sound go;
+	Sound death;
+	Sound gameOver;
+
 
 	int width, height;
 
@@ -53,7 +57,7 @@ public class Game implements Screen{
 
 	private int inc = 1;
 
-	DecimalFormat timeFormat = new DecimalFormat("#.000");
+	DecimalFormat timeFormat = new DecimalFormat("0.000");
 
 	public Game (Map map){
 		this.map = map;
@@ -77,20 +81,15 @@ public class Game implements Screen{
 
 		try {
 			audioPlayer = new AudioPlayer(new File(MapLoader.TEMP_PATH + map.info.audioTempName));
-			audioPlayer.setVolume(0.2f);
-			audioPlayer.play();
-			audioPlayer.setBeatListener(new BeatListener() {
-				@Override
-				public void onBeatLow() {
-					scale = (!player.dead ? Math.max(scale, 1.2f) : 1f);
-				}
 
-				@Override
-				public void onBeatHigh() {
-				}
-			});
-			map.script.onInit();
-			map.script.initEvents();
+			levelUp = Gdx.audio.newSound(Gdx.files.internal("assets/sound/levelUp.ogg"));
+			sides = Gdx.audio.newSound(Gdx.files.internal("assets/sound/beep.ogg"));
+			go = Gdx.audio.newSound(Gdx.files.internal("assets/sound/go.ogg"));
+			death = Gdx.audio.newSound(Gdx.files.internal("assets/sound/death.ogg"));
+			gameOver = Gdx.audio.newSound(Gdx.files.internal("assets/sound/gameOver.ogg"));
+
+
+			start(map.info.startTimes[0]);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -103,115 +102,12 @@ public class Game implements Screen{
 
 	}
 
-	float delta;
-	float delta0;
-	float delta1;
-	float delta2;
-	float fastRotate = 0f;
-
 	@Override
-	public void render(float delta8) {
+	public void render(float delta) {
+		updateGame(delta);
+
 		Gdx.gl20.glClearColor(0, 0, 0, 1);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
-
-		if(!player.dead){
-			CurrentMap.wallTimeline.update(delta8);
-			CurrentMap.eventTimeline.update(delta8);
-		}
-
-
-		if(!player.dead)
-			CurrentMap.currentTime += Gdx.graphics.getDeltaTime();
-
-		if(!player.dead && (delta1+=Gdx.graphics.getDeltaTime())>=CurrentMap.levelIncrement){
-
-			fastRotate = CurrentMap.fastRotate;
-
-			CurrentMap.isFastRotation = true;
-			CurrentMap.rotationSpeed += (CurrentMap.rotationSpeed > 0 ? CurrentMap.rotationIncrement: -CurrentMap.rotationIncrement );
-			CurrentMap.rotationSpeed *= -1;
-			CurrentMap.rotationSpeed = Math.min(CurrentMap.rotationSpeedMax, Math.max(-CurrentMap.rotationSpeedMax, CurrentMap.rotationSpeed));
-
-			CurrentMap.mustChangeSides = true;
-
-			delta1 = 0;
-		}
-
-
-		this.delta += Gdx.graphics.getDeltaTime();
-
-		while (this.delta >= (1f / 60)) {
-
-			if(CurrentMap.currentText != null){
-
-				if(!CurrentMap.currentText.visible){
-					message.setText(CurrentMap.currentText.text.toUpperCase());
-					message.pack();
-					CurrentMap.currentText.visible = true;
-				}
-
-				if((delta2 += 1f / 60) >= CurrentMap.currentText.duration){
-					CurrentMap.currentText = null;
-					message.setText("");
-					message.pack();
-					delta2 = 0;
-				}
-			}
-
-			if (CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides) {
-				CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
-				CurrentMap.wallTimeline.wait(1f);
-				CurrentMap.mustChangeSides = false;
-			}
-
-			if (CurrentMap.wallTimeline.isAllSpawned() && !CurrentMap.mustChangeSides) {
-				map.script.nextPattern();
-			}
-
-			if (!player.dead) {
-				Wall.updatePulse();
-			} else {
-
-				if(CurrentMap.rotationSpeed < 0){
-					CurrentMap.rotationSpeed = Math.min(-0.02f, CurrentMap.rotationSpeed + 0.002f);
-				} else if(CurrentMap.rotationSpeed > 0) {
-					CurrentMap.rotationSpeed = Math.max(0.02f, CurrentMap.rotationSpeed - 0.002f);
-				}
-
-				if (audioPlayer != null && !audioPlayer.hasEnded()) {
-					audioPlayer.stop();
-				}
-			}
-
-
-			camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
-			fastRotate = Math.max(0, fastRotate - 1f);
-			if(fastRotate == 0) CurrentMap.isFastRotation = false;
-
-
-
-			scale = Math.max(scale - 0.01f, 1f);
-
-
-
-			inc = (delta0 == 0 ? 1 : (delta0 == CurrentMap.skewTime ? -1 : inc));
-			delta0 += 1f/60 * inc;
-			delta0 = Math.min(CurrentMap.skewTime, Math.max(delta0, 0));
-			float percent = delta0 / CurrentMap.skewTime;
-			CurrentMap.skew = CurrentMap.minSkew + (CurrentMap.maxSkew - CurrentMap.minSkew) * percent;
-
-
-
-			fps.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
-			fps.pack();
-
-			time.setText("Time: " + timeFormat.format(CurrentMap.currentTime));
-			time.pack();
-
-			time.setY(fps.getHeight());
-
-			delta  -= 0.016666668f;
-		}
 
 		renderer.setProjectionMatrix(camera.combined);
 
@@ -257,6 +153,158 @@ public class Game implements Screen{
 	@Override
 	public void dispose() {
 		if(renderer != null) renderer.dispose();
+	}
+
+	public void start(float startTime){
+
+		delta0 = delta1 = delta2 = delta3 = 0;
+
+		CurrentMap.currentTime = 0f;
+		CurrentMap.reset();
+
+		audioPlayer.setVolume(0.2f);
+		audioPlayer.play();
+		if(startTime != 0)
+			audioPlayer.setPosition(startTime);
+
+		camera.reset();
+
+		map.script.onInit();
+		map.script.initEvents();
+		go.play();
+	}
+
+	public void restart(){
+		start(map.info.startTimes[MathUtils.random(0, map.info.startTimes.length - 1)]);
+	}
+
+	float fastRotate = 0f;
+	float delta0;
+	public void updateGame(float delta){
+
+		if(player.dead){
+
+			if (audioPlayer != null && !audioPlayer.hasEnded()) {
+				death.play();
+				gameOver.play();
+				camera.rumble(5f, 4f);
+				audioPlayer.stop();
+			}
+
+			if(Gdx.input.isKeyPressed(Keys.SPACE)){
+				player.reset();
+				restart();
+			}
+
+		}
+
+
+		updateTimeline(delta);
+
+		this.delta0 += delta;
+		while (this.delta0 >= (1f / 60)) {
+
+			updateText(1f / 60);
+			updateRotation(1f / 60);
+			updateSkew(1f / 60);
+
+			if (!player.dead) {
+				Wall.updatePulse();
+			}
+
+			scale = Math.max(scale - 0.01f, 1f);
+
+			delta0 -= 0.016666668f;
+		}
+
+		map.script.update(delta);
+	}
+
+	float delta1;
+	public void updateText(float delta) {
+		if(CurrentMap.currentText != null){
+
+			if(!CurrentMap.currentText.visible){
+				message.setText(CurrentMap.currentText.text.toUpperCase());
+				CurrentMap.currentText.visible = true;
+			}
+
+			if((delta1 += delta) >= CurrentMap.currentText.duration){
+				CurrentMap.currentText = null;
+				message.setText("");
+				delta1 = 0;
+			}
+		}
+
+		fps.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
+		time.setText("Time: " + timeFormat.format(CurrentMap.currentTime));
+
+		fps.pack();
+		time.pack();
+		message.pack();
+
+		time.setY(fps.getHeight());
+	}
+
+	float delta2;
+	public void updateSkew(float delta) {
+		inc = (delta2 == 0 ? 1 : (delta2 == CurrentMap.skewTime ? -1 : inc));
+		delta2 += delta * inc;
+		delta2 = Math.min(CurrentMap.skewTime, Math.max(delta2, 0));
+		float percent = delta2 / CurrentMap.skewTime;
+		CurrentMap.skew = CurrentMap.minSkew + (CurrentMap.maxSkew - CurrentMap.minSkew) * percent;
+	}
+
+	float delta3;
+	public void updateTimeline(float delta) {
+
+		if(!player.dead){
+			CurrentMap.wallTimeline.update(delta);
+			CurrentMap.eventTimeline.update(delta);
+			CurrentMap.currentTime += delta;
+		}
+
+		if(!player.dead && (delta3 +=delta)>=CurrentMap.levelIncrement){
+
+			fastRotate = CurrentMap.fastRotate;
+
+			levelUp.play();
+
+			CurrentMap.isFastRotation = true;
+			CurrentMap.rotationSpeed += (CurrentMap.rotationSpeed > 0 ? CurrentMap.rotationIncrement: -CurrentMap.rotationIncrement );
+			CurrentMap.rotationSpeed *= -1;
+			CurrentMap.rotationSpeed = Math.min(CurrentMap.rotationSpeedMax, Math.max(-CurrentMap.rotationSpeedMax, CurrentMap.rotationSpeed));
+
+			CurrentMap.mustChangeSides = true;
+
+			delta3 = 0;
+		}
+
+		if (CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides) {
+			CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
+			sides.play();
+			CurrentMap.mustChangeSides = false;
+		}
+
+		if (CurrentMap.wallTimeline.isAllSpawned() && !CurrentMap.mustChangeSides) {
+			map.script.nextPattern();
+		}
+
+	}
+
+	public void updateRotation(float delta) {
+
+		if(player.dead) {
+			if(CurrentMap.rotationSpeed < 0){
+				CurrentMap.rotationSpeed = Math.min(-0.02f, CurrentMap.rotationSpeed + 0.002f);
+			} else if(CurrentMap.rotationSpeed > 0) {
+				CurrentMap.rotationSpeed = Math.max(0.02f, CurrentMap.rotationSpeed - 0.002f);
+			}
+		}
+
+		camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
+		fastRotate = Math.max(0, fastRotate - 1f);
+		if(fastRotate == 0) CurrentMap.isFastRotation = false;
 	}
 
 	float getSaturated(float mValue) { return Math.max(0.f, Math.min(1.f, mValue)); }

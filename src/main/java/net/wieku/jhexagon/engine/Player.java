@@ -111,4 +111,8 @@ public class Player {
 		renderer.end();
 	}
 
+	public void reset(){
+		dead = false;
+	}
+
 }

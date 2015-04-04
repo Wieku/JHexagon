@@ -100,7 +100,8 @@ public class MapLoader {
 					File temp = new File(TEMP_PATH);
 					temp.mkdirs();
 
-					m.audioTempName = Files.hash(file, Hashing.sha1()).toString();
+					String ext = Files.getFileExtension(m.audioFileName);
+					m.audioTempName = Files.hash(file, Hashing.sha1()).toString() + "." + ext;
 
 					if(!new File(TEMP_PATH+m.audioTempName).exists()){
 						JarEntry entry = jar.getJarEntry(m.audioFileName);
