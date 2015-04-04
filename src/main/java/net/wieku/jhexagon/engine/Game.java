@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import net.wieku.jhexagon.Main;
 import net.wieku.jhexagon.api.CurrentMap;
 import net.wieku.jhexagon.api.Wall;
 import net.wieku.jhexagon.engine.camera.SkewCamera;
@@ -99,7 +100,7 @@ public class Game implements Screen{
 	@Override
 	public void show() {
 
-
+		Main.conf.foregroundFPS = 0;
 	}
 
 	@Override
@@ -180,6 +181,7 @@ public class Game implements Screen{
 
 	float fastRotate = 0f;
 	float delta0;
+	boolean escClick = false;
 	public void updateGame(float delta){
 
 		if(player.dead){
@@ -187,7 +189,7 @@ public class Game implements Screen{
 			if (audioPlayer != null && !audioPlayer.hasEnded()) {
 				death.play();
 				gameOver.play();
-				camera.rumble(5f, 4f);
+				camera.rumble(10f, 2f);
 				audioPlayer.stop();
 			}
 
@@ -196,6 +198,19 @@ public class Game implements Screen{
 				restart();
 			}
 
+			if(Gdx.input.isKeyPressed(Keys.ESCAPE) && !escClick){
+				Main.getInstance().setScreen(Menu.getInstance());
+			}
+
+		} else {
+			if(Gdx.input.isKeyPressed(Keys.ESCAPE)){
+				player.dead = true;
+				escClick = true;
+			}
+		}
+
+		if(!Gdx.input.isKeyPressed(Keys.ESCAPE)){
+			escClick = false;
 		}
 
 
@@ -216,8 +231,8 @@ public class Game implements Screen{
 
 			delta0 -= 0.016666668f;
 		}
-
-		map.script.update(delta);
+		if(!player.dead)
+			map.script.update(delta);
 	}
 
 	float delta1;
@@ -283,6 +298,11 @@ public class Game implements Screen{
 		if (CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides) {
 			CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
 			sides.play();
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
 			CurrentMap.mustChangeSides = false;
 		}
 

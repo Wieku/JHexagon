@@ -55,9 +55,9 @@ public class SkewCamera extends PerspectiveCamera {
 
 
 		position.set(
-				1000f * MathUtils.cos((skw + rumbleY) / 360f * MathUtils.PI2) * MathUtils.cos((currentRotation + rumbleX) / 360f * MathUtils.PI2),
-				1000f * MathUtils.sin((skw + rumbleY) / 360f * MathUtils.PI2),
-				1000f * MathUtils.cos((skw + rumbleY) / 360f * MathUtils.PI2) * MathUtils.sin((currentRotation + rumbleX) / 360f * MathUtils.PI2) );
+				1000f * MathUtils.cos(Math.min(89.9999f, skw + rumbleY) / 360f * MathUtils.PI2) * MathUtils.cos((currentRotation + rumbleX) / 360f * MathUtils.PI2),
+				1000f * MathUtils.sin(Math.min(89.9999f, skw + rumbleY) / 360f * MathUtils.PI2),
+				1000f * MathUtils.cos(Math.min(89.9999f, skw + rumbleY) / 360f * MathUtils.PI2) * MathUtils.sin((currentRotation + rumbleX) / 360f * MathUtils.PI2) );
 
 		lookAt(0, 0, 0);
 		up.set(Vector3.Y);
