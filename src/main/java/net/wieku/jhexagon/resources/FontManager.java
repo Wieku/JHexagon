@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeBitmapFontData;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
@@ -22,8 +23,8 @@ import org.slf4j.LoggerFactory;
 public enum FontManager{
 
 	MAIN("Pixel-UniCode");
-	
-	protected static HashMap<FontManager, FontData> fonts = new HashMap<FontManager, FontData>();
+
+	protected static HashMap<FontManager, FontData> fonts = new HashMap<>();
 	protected String name;
 	
 	
@@ -100,5 +101,10 @@ public enum FontManager{
 		}
 		LoggerFactory.getLogger(FontManager.class).info("FontManager initialized!");
 	}
-	
+
+	static class FontData{
+		public TextureRegion[] regions;
+		public BitmapFontData data;
+	}
+
 }

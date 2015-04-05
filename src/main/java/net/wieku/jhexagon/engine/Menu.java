@@ -15,8 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import net.wieku.jhexagon.Main;
+import net.wieku.jhexagon.api.CurrentMap;
+import net.wieku.jhexagon.engine.camera.SkewCamera;
 import net.wieku.jhexagon.maps.Map;
 import net.wieku.jhexagon.utils.GUIHelper;
+import net.wieku.jhexagon.utils.ShapeRenderer3D;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,6 +34,10 @@ public class Menu implements Screen {
 	ArrayList<MenuMap> actors = new ArrayList<>();
 	Stage stage;
 	Sound beep;
+
+	SkewCamera camera = new SkewCamera();
+	ShapeRenderer3D shapeRenderer = new ShapeRenderer3D();
+	Background background = new Background();
 
 	private int mapIndex = 0;
 	public static ScrollPane pane;
@@ -68,6 +75,10 @@ public class Menu implements Screen {
 		Gdx.gl20.glClearColor(0, 0, 0, 1);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
+		CurrentMap.skew = 0;
+		camera.orbit(180f * delta);
+		shapeRenderer.setProjectionMatrix(camera.combined);
+		background.draw(shapeRenderer, delta);
 
 		pane.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -103,6 +114,10 @@ public class Menu implements Screen {
 	@Override
 	public void show() {
 		Main.conf.foregroundFPS = 120;
+
+		CurrentMap.reset();
+		maps.get(mapIndex).script.initColors();
+
 		Gdx.input.setInputProcessor(new InputProcessor() {
 			@Override
 			public boolean keyDown(int keycode) {
@@ -118,6 +133,9 @@ public class Menu implements Screen {
 
 						float scr = pane.getScrollHeight() - pane.getScrollY() + Gdx.graphics.getHeight();
 
+						CurrentMap.reset();
+						maps.get(mapIndex).script.initColors();
+
 						if(scr < actors.get(mapIndex).getY()+actors.get(mapIndex).getHeight() || actors.get(mapIndex).getY()+actors.get(mapIndex).getHeight() < scr-Gdx.graphics.getHeight() )
 							pane.setScrollY(pane.getScrollHeight() + Gdx.graphics.getHeight() - actors.get(mapIndex).getY() - actors.get(mapIndex).getHeight()/2);
 
@@ -131,6 +149,9 @@ public class Menu implements Screen {
 						actors.get(mapIndex).check(true);
 
 						float scr = pane.getScrollHeight() - pane.getScrollY();
+
+						CurrentMap.reset();
+						maps.get(mapIndex).script.initColors();
 
 						if(scr > actors.get(mapIndex).getY()-actors.get(mapIndex).getHeight() || actors.get(mapIndex).getY() > scr + Gdx.graphics.getHeight() )
 							pane.setScrollY(pane.getScrollHeight() - actors.get(mapIndex).getY() + actors.get(mapIndex).getHeight()/2);

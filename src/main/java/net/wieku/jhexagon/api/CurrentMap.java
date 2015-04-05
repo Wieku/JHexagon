@@ -51,8 +51,6 @@ public abstract class CurrentMap {
 		wallTimeline.reset();
 		eventTimeline.reset();
 		resetValues();
-		//TODO: reset all variables
-
 	}
 
 	private static void resetValues(){

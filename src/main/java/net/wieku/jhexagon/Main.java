@@ -29,7 +29,7 @@ public class Main extends Game{
 	@Override
 	public void create() {
 		FontManager.init();
-		maps = new MapLoader().load();
+		maps = MapLoader.load();
 		setScreen(new Menu(maps));
 	}
 
@@ -49,6 +49,8 @@ public class Main extends Game{
 	@Override
 	public void dispose() {
 		super.dispose();
+		if(maps != null)
+			maps.forEach(m->MapLoader.closeJar(m.file));
 	}
 
 

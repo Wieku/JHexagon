@@ -15,10 +15,10 @@ public class AudioPlayer {
 	boolean ended;
 
 
-	public AudioPlayer(File file) throws FileNotFoundException{
-		if(!file.exists()) throw new FileNotFoundException(file.getAbsolutePath());
+	public AudioPlayer(FileHandle file) throws FileNotFoundException{
+		if(!file.exists()) throw new IllegalStateException("Cannot find audio");
 		
-		music = Gdx.audio.newMusic(new FileHandle(file));
+		music = Gdx.audio.newMusic(file);
 		music.setLooping(true);
 		music.setOnCompletionListener(music1 -> {ended = true;
 			System.out.println("ded");});

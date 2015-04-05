@@ -15,13 +15,11 @@ import net.wieku.jhexagon.api.CurrentMap;
 import net.wieku.jhexagon.api.Wall;
 import net.wieku.jhexagon.engine.camera.SkewCamera;
 import net.wieku.jhexagon.maps.Map;
-import net.wieku.jhexagon.maps.MapLoader;
+import net.wieku.jhexagon.resources.ArchiveFileHandle;
 import net.wieku.jhexagon.sound.AudioPlayer;
-import net.wieku.jhexagon.sound.BeatListener;
 import net.wieku.jhexagon.utils.GUIHelper;
 import net.wieku.jhexagon.utils.ShapeRenderer3D;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 
@@ -81,7 +79,7 @@ public class Game implements Screen{
 		stage.addActor(message);
 
 		try {
-			audioPlayer = new AudioPlayer(new File(MapLoader.TEMP_PATH + map.info.audioTempName));
+			audioPlayer = new AudioPlayer(new ArchiveFileHandle(map.file,map.info.audioFileName));
 
 			levelUp = Gdx.audio.newSound(Gdx.files.internal("assets/sound/levelUp.ogg"));
 			sides = Gdx.audio.newSound(Gdx.files.internal("assets/sound/beep.ogg"));
@@ -171,6 +169,7 @@ public class Game implements Screen{
 		camera.reset();
 
 		map.script.onInit();
+		map.script.initColors();
 		map.script.initEvents();
 		go.play();
 	}

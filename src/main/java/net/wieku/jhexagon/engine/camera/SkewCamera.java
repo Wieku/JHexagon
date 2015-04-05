@@ -25,6 +25,10 @@ public class SkewCamera extends PerspectiveCamera {
 	private float rumblePower = 0;
 	private float currentRumblePower = 0;
 
+	public SkewCamera(){
+		updateViewport(1,1);
+	}
+
 	public void updateViewport(int width, int height){
 		viewportWidth = 4;
 		viewportHeight = 3;

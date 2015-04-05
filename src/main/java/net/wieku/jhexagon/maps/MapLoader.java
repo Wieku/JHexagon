@@ -1,22 +1,11 @@
 package net.wieku.jhexagon.maps;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.wieku.jhexagon.api.MapScript;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,24 +13,23 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipFile;
 
 /**
  * @author Sebastian Krajewski on 28.03.15.
  */
 public class MapLoader {
-	private static final String PLUGIN_PATH = "Maps/";
-	public static final String TEMP_PATH = "Maps/.temp/";
+	private static final String MAPS_PATH = "Maps/";
 
 	//private static Logger log = LoggerFactory.getLogger(MapLoader.class);
 
-	public ArrayList<Map> load() {
-		new File(PLUGIN_PATH).mkdirs();
+	public static ArrayList<Map> load() {
+		new File(MAPS_PATH).mkdirs();
 		System.out.println("Loading maps");
 		ArrayList<Map> maps = new ArrayList<>();
 
-		File dir = new File(PLUGIN_PATH);
+		File dir = new File(MAPS_PATH);
 
 		File files[] = dir.listFiles();
 
@@ -58,6 +46,7 @@ public class MapLoader {
 
 				if (jar.getEntry("map.json") == null) {
 					System.err.println("File: " + file.getName() + " doesn't contain map.json!");
+					closeJar(jar);
 					continue;
 				}
 
@@ -68,14 +57,16 @@ public class MapLoader {
 				} catch (IOException e) {
 					System.err.println("File map.json in mod " + file.getName() + " has wrong syntax!");
 					e.printStackTrace();
+					closeJar(jar);
 					continue;
 				}
 
 				ClassLoader loader;
 				try {
-					loader = URLClassLoader.newInstance(new URL[]{file.toURI().toURL()}, getClass().getClassLoader());
+					loader = URLClassLoader.newInstance(new URL[]{file.toURI().toURL()}, MapLoader.class.getClassLoader());
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
+					closeJar(jar);
 					continue;
 				}
 
@@ -84,54 +75,24 @@ public class MapLoader {
 					toLoad = loader.loadClass(m.className);
 				} catch (ClassNotFoundException e1) {
 					e1.printStackTrace();
+					closeJar(jar);
 					continue;
 				}
 
 				List<Class<?>> interfaces = Arrays.asList(toLoad.getInterfaces());
 				if (!interfaces.contains(MapScript.class)) {
 					System.err.println("Script of " + m.name + "(" + file.getName() + ") Doesn't implement 'MapScript' interface!");
+					closeJar(jar);
 					continue;
 				}
 
 				try {
-
-					maps.add(new Map((MapScript) toLoad.newInstance(), m));
-
-					File temp = new File(TEMP_PATH);
-					temp.mkdirs();
-
-					String ext = Files.getFileExtension(m.audioFileName);
-					m.audioTempName = Files.hash(file, Hashing.sha1()).toString() + "." + ext;
-
-					if(!new File(TEMP_PATH+m.audioTempName).exists()){
-						JarEntry entry = jar.getJarEntry(m.audioFileName);
-
-						if(entry == null) {
-							System.err.println("Audiofile of " + m.name + "(" + file.getName() + ") not found!");
-							continue;
-						}
-
-						InputStream is = jar.getInputStream(entry); // get the input stream
-						FileOutputStream fos = new java.io.FileOutputStream(new File(TEMP_PATH+m.audioTempName));
-						while (is.available() > 0) {
-							fos.write(is.read());
-						}
-						fos.close();
-						is.close();
-					}
-
-
-
+					maps.add(new Map((MapScript) toLoad.newInstance(), m, jar));
 				} catch (Exception e1) {
 					System.err.println("Script of " + m.name + "(" + file.getName() + ") couldn't contain custom constructor!");
 					e1.printStackTrace();
+					closeJar(jar);
 					continue;
-				}
-
-				try {
-					jar.close();
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
 
 				System.out.println("Map " + m.name + " Has been loaded!");
@@ -139,6 +100,14 @@ public class MapLoader {
 		}
 		System.out.println("Loaded " + maps.size() + " maps");
 		return maps;
+	}
+
+	public static void closeJar(ZipFile jar){
+		try {
+			jar.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

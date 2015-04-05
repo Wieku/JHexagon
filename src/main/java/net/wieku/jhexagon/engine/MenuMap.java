@@ -15,10 +15,6 @@ import net.wieku.jhexagon.utils.GUIHelper;
 public class MenuMap extends Table {
 
 	public Map map;
-	private Label name;
-	private Label author;
-	private Label description;
-	private Label song;
 
 	private Image borderTop;
 	private Image borderBottom;
@@ -27,20 +23,13 @@ public class MenuMap extends Table {
 
 	public MenuMap(Map map){
 		super();
+		setBackground(GUIHelper.getTxRegion(new Color(0,0,0,0.5f)));
 		this.map = map;
-
-		//setBackground(GUIHelper.getTxRegion(new Color(0, 0, 0, 0.5f)));
-
 
 		borderTop = new Image(GUIHelper.getTxHRegion(Color.WHITE, 2), Scaling.stretchX);
 		borderBottom = new Image(GUIHelper.getTxHRegion(Color.WHITE, 2), Scaling.stretchX);
 		borderLeft = new Image(GUIHelper.getTxWRegion(Color.WHITE, 2), Scaling.stretchY);
 		borderRight = new Image(GUIHelper.getTxWRegion(Color.WHITE, 2), Scaling.stretchY);
-
-		/*borderTop.setColor(1, 1, 1, 0);
-		borderBottom.setColor(1, 1, 1, 0);
-		borderLeft.setColor(1, 1, 1, 0);
-		borderRight.setColor(1, 1, 1, 0);*/
 
 		borderTop.setVisible(false);
 		borderBottom.setVisible(false);
@@ -51,10 +40,10 @@ public class MenuMap extends Table {
 
 
 		Table info = new Table();
-		info.add(name = new Label(map.info.name, GUIHelper.getLabelStyle(Color.WHITE, 16))).top().left().expandX().fillX().row();
-		info.add(author = new Label("Author: "+map.info.author, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
-		info.add(description = new Label(map.info.description, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
-		info.add(song = new Label(map.info.songName + " by " + map.info.songAuthor, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
+		info.add(new Label(map.info.name, GUIHelper.getLabelStyle(Color.WHITE, 16))).top().left().expandX().fillX().row();
+		info.add(new Label("Author: "+map.info.author, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
+		info.add(new Label(map.info.description, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
+		info.add(new Label(map.info.songName + " by " + map.info.songAuthor, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
 
 
 		add(borderLeft).fillY();

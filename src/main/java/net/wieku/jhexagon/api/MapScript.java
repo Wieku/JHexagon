@@ -12,6 +12,7 @@ public interface MapScript {
 	public void nextLevel(int levelNum);
 	public void nextPattern();
 	public void update(float delta);
+	public void initColors();
 
 	default <T> void shuffle(T[] ar) {
 		Random rnd = new Random();
