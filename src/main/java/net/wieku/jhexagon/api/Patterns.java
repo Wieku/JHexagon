@@ -164,13 +164,13 @@ public abstract class Patterns {
 		rWallEx(startSide + j, mExtra);
 		t_wait(delay * 0.9f);
 
-		loopDir = loopDir * -1;
+		loopDir *= -1;
 
 		for (int i = 0; i <= mTimes + 1; ++i) {
 			currentSide = currentSide + loopDir;
-			rWallEx(currentSide + j - 1, mExtra);
+			rWallEx(startSide + j, mExtra);
 			j = j + loopDir;
-				t_wait(delay);
+			t_wait(delay);
 		}
 
 		THICKNESS = oldThickness;
@@ -304,6 +304,7 @@ public abstract class Patterns {
 	}
 
 	public static void t_wait(float delay){
+		//System.out.println(delay / 60);
 		CurrentMap.wallTimeline.wait(delay / 60);
 	}
 

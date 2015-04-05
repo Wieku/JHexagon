@@ -160,7 +160,7 @@ public class Game implements Screen{
 
 		CurrentMap.currentTime = 0f;
 		CurrentMap.reset();
-
+		player.reset();
 		audioPlayer.setVolume(0.2f);
 		audioPlayer.play();
 		if(startTime != 0)
@@ -183,17 +183,18 @@ public class Game implements Screen{
 	boolean escClick = false;
 	public void updateGame(float delta){
 
+		updateTimeline(delta);
+
 		if(player.dead){
 
 			if (audioPlayer != null && !audioPlayer.hasEnded()) {
 				death.play();
 				gameOver.play();
-				camera.rumble(10f, 2f);
+				camera.rumble(5f, 2f);
 				audioPlayer.stop();
 			}
 
 			if(Gdx.input.isKeyPressed(Keys.SPACE)){
-				player.reset();
 				restart();
 			}
 
@@ -211,9 +212,6 @@ public class Game implements Screen{
 		if(!Gdx.input.isKeyPressed(Keys.ESCAPE)){
 			escClick = false;
 		}
-
-
-		updateTimeline(delta);
 
 		this.delta0 += delta;
 		while (this.delta0 >= (1f / 60)) {
@@ -297,11 +295,6 @@ public class Game implements Screen{
 		if (CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides) {
 			CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
 			sides.play();
-			System.out.println("");
-			System.out.println("");
-			System.out.println("");
-			System.out.println("");
-			System.out.println("");
 			CurrentMap.mustChangeSides = false;
 		}
 

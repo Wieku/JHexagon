@@ -4,12 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.wieku.jhexagon.api.MapScript;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,12 +26,13 @@ import java.util.zip.ZipFile;
  * @author Sebastian Krajewski on 28.03.15.
  */
 public class MapLoader {
-	private static final String MAPS_PATH = "Maps/";
+	private static String MAPS_PATH = "Maps/";
 
 	//private static Logger log = LoggerFactory.getLogger(MapLoader.class);
 
 	public static ArrayList<Map> load() {
 		new File(MAPS_PATH).mkdirs();
+
 		System.out.println("Loading maps");
 		ArrayList<Map> maps = new ArrayList<>();
 

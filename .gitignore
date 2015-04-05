@@ -4,6 +4,7 @@ JHexagon.ipr
 JHexagon.iws
 out/
 .gradle/
+build/
 run/*
 !run/Maps/
 run/Maps/.temp/
