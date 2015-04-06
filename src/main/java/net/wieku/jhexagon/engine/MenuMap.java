@@ -43,7 +43,7 @@ public class MenuMap extends Table {
 		info.add(new Label(map.info.name, GUIHelper.getLabelStyle(Color.WHITE, 16))).top().left().expandX().fillX().row();
 		info.add(new Label(map.info.description, GUIHelper.getLabelStyle(Color.WHITE, 14))).top().left().expandX().fillX().row();
 		info.add(new Label("Author: "+map.info.author, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
-		info.add(new Label("Song: " + map.info.songName + " by " + map.info.songAuthor, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
+		info.add(new Label("Music: " + map.info.songName + " by " + map.info.songAuthor, GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
 
 
 		add(borderLeft).fillY();
@@ -62,7 +62,7 @@ public class MenuMap extends Table {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		setWidth(Menu.pane.getWidth());
+		//setWidth(Menu.pane.getWidth());
 		setX(0);
 		layout();
 		super.draw(batch, parentAlpha);

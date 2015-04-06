@@ -8,7 +8,10 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -32,16 +35,23 @@ public class Menu implements Screen {
 
 
 	ArrayList<Map> maps;
-	ArrayList<MenuMap> actors = new ArrayList<>();
+	//ArrayList<MenuMap> actors = new ArrayList<>();
 	Stage stage;
 	Sound beep;
+
+	Label number;
+	Label name;
+	Label description;
+	Label author;
+	Label music;
+
+	Table info;
 
 	SkewCamera camera = new SkewCamera();
 	ShapeRenderer3D shapeRenderer = new ShapeRenderer3D();
 	Background background = new Background();
 
 	private int mapIndex = 0;
-	public static ScrollPane pane;
 
 	static Menu instance;
 
@@ -51,23 +61,66 @@ public class Menu implements Screen {
 		beep = Gdx.audio.newSound(Gdx.files.internal("assets/sound/beep.ogg"));
 
 		stage = new Stage(new ScreenViewport());
+		stage.addListener(new InputListener(){
+			@Override
+			public boolean keyDown(InputEvent event, int keycode) {
 
-		Table table = new Table();
+				if(!maps.isEmpty()){
+					if(keycode == Keys.LEFT){
 
-		for(Map map : maps){
-			MenuMap mp = new MenuMap(map);
-			actors.add(mp);
-			table.add(mp).top().row();
-		}
+						if(--mapIndex < 0) mapIndex = maps.size()-1;
 
-		if(!actors.isEmpty()) actors.get(0).check(true);
+						selectIndex(mapIndex);
 
-		pane = new ScrollPane(table, GUIHelper.getScrollPaneStyle(Color.BLACK, Color.WHITE));
-		pane.setupFadeScrollBars(1f, 1f);
-		pane.setSmoothScrolling(false);
-		((Table) pane.getChildren().get(0)).top().left();
-		pane.setCancelTouchFocus(true);
-		stage.addActor(pane);
+						CurrentMap.reset();
+						maps.get(mapIndex).script.initColors();
+
+						beep.play();
+					}
+
+					if(keycode == Keys.RIGHT){
+
+						if(++mapIndex > maps.size()-1) mapIndex = 0;
+
+						selectIndex(mapIndex);
+
+						CurrentMap.reset();
+						maps.get(mapIndex).script.initColors();
+
+						beep.play();
+
+					}
+
+					if(keycode == Keys.ENTER){
+						beep.play();
+						Gdx.input.setInputProcessor(null);
+						Main.getInstance().setScreen(new Game(maps.get(mapIndex)));
+					}
+
+				}
+
+				if(keycode == Keys.ESCAPE){
+					beep.play();
+					Gdx.app.exit();
+				}
+
+				return false;
+			}
+		});
+
+
+		info = new Table();
+		info.add(number = new Label("", GUIHelper.getLabelStyle(Color.WHITE, 12))).top().left().expandX().fillX().row();
+		info.add(name = new Label("", GUIHelper.getLabelStyle(Color.WHITE, 18))).top().left().expandX().fillX().row();
+		info.add(description = new Label("", GUIHelper.getLabelStyle(Color.WHITE, 16))).top().left().expandX().fillX().row();
+		info.add(author = new Label("", GUIHelper.getLabelStyle(Color.WHITE, 14))).top().left().expandX().fillX().row();
+		info.add(music = new Label("", GUIHelper.getLabelStyle(Color.WHITE, 14))).top().left().expandX().fillX().row();
+
+		info.setPosition(5, 5);
+		stage.addActor(info);
+
+		if(!maps.isEmpty()) selectIndex(mapIndex);
+
 	}
 
 	@Override
@@ -77,14 +130,13 @@ public class Menu implements Screen {
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
 		CurrentMap.skew = 0;
-		camera.orbit(180f * delta);
+		camera.orbit(90f * delta);
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.begin(ShapeType.Filled);
 		background.update(delta);
 		background.render(shapeRenderer, delta, true);
 		shapeRenderer.end();
 
-		pane.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		stage.act(delta);
 		stage.draw();
@@ -96,129 +148,44 @@ public class Menu implements Screen {
 	}
 
 	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void hide() {
-
-	}
-
-	@Override
-	public void dispose() {
-
-	}
-
-	@Override
 	public void show() {
 		Main.conf.foregroundFPS = 120;
 
 		CurrentMap.reset();
 		maps.get(mapIndex).script.initColors();
 
-		Gdx.input.setInputProcessor(new InputProcessor() {
-			@Override
-			public boolean keyDown(int keycode) {
+		Gdx.input.setInputProcessor(stage);
 
-				if(!actors.isEmpty()){
-					if(keycode == Keys.UP){
-
-						actors.get(mapIndex).check(false);
-
-						if(--mapIndex < 0) mapIndex = actors.size()-1;
-
-						actors.get(mapIndex).check(true);
-
-						float scr = pane.getScrollHeight() - pane.getScrollY() + Gdx.graphics.getHeight();
-
-						CurrentMap.reset();
-						maps.get(mapIndex).script.initColors();
-
-						if(scr < actors.get(mapIndex).getY()+actors.get(mapIndex).getHeight() || actors.get(mapIndex).getY()+actors.get(mapIndex).getHeight() < scr-Gdx.graphics.getHeight() )
-							pane.setScrollY(pane.getScrollHeight() + Gdx.graphics.getHeight() - actors.get(mapIndex).getY() - actors.get(mapIndex).getHeight()/2);
-
-					}
-
-					if(keycode == Keys.DOWN){
-
-						actors.get(mapIndex).check(false);
-						if(++mapIndex > actors.size()-1) mapIndex = 0;
-
-						actors.get(mapIndex).check(true);
-
-						float scr = pane.getScrollHeight() - pane.getScrollY();
-
-						CurrentMap.reset();
-						maps.get(mapIndex).script.initColors();
-
-						if(scr > actors.get(mapIndex).getY()-actors.get(mapIndex).getHeight() || actors.get(mapIndex).getY() > scr + Gdx.graphics.getHeight() )
-							pane.setScrollY(pane.getScrollHeight() - actors.get(mapIndex).getY() + actors.get(mapIndex).getHeight()/2);
-					}
-
-					if(keycode == Keys.ENTER){
-						Gdx.input.setInputProcessor(null);
-						Main.getInstance().setScreen(new Game(maps.get(mapIndex)));
-					}
-
-					try {
-						Method method = pane.getClass().getDeclaredMethod("resetFade");
-						method.setAccessible(true);
-						method.invoke(pane);
-					} catch (Exception e) {}
-
-					beep.play();
-
-				}
-
-
-
-				return false;
-			}
-
-			@Override
-			public boolean keyUp(int keycode) {
-				return false;
-			}
-
-			@Override
-			public boolean keyTyped(char character) {
-				return false;
-			}
-
-			@Override
-			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-				return false;
-			}
-
-			@Override
-			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-				return false;
-			}
-
-			@Override
-			public boolean touchDragged(int screenX, int screenY, int pointer) {
-				return false;
-			}
-
-			@Override
-			public boolean mouseMoved(int screenX, int screenY) {
-				return false;
-			}
-
-			@Override
-			public boolean scrolled(int amount) {
-				return false;
-			}
-		});
 	}
+
+
+	public void selectIndex(int index){
+		Map map = maps.get(index);
+
+		number.setText("[" + (index + 1) + "/" + maps.size() + "] Pack: " + map.info.pack);
+		name.setText(map.info.name);
+		description.setText(map.info.description);
+		author.setText("Author: " + map.info.author);
+		music.setText("Music: " + map.info.songName + " by " + map.info.songAuthor);
+		info.pack();
+		info.setPosition(5, 5);
+	}
+
 
 	public static Screen getInstance() {
 		return instance;
 	}
+
+	@Override
+	public void pause() {}
+
+	@Override
+	public void resume() {}
+
+	@Override
+	public void hide() {}
+
+	@Override
+	public void dispose() {}
+
 }

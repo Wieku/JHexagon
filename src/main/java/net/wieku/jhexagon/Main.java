@@ -8,6 +8,7 @@ import net.wieku.jhexagon.engine.Menu;
 import net.wieku.jhexagon.maps.Map;
 import net.wieku.jhexagon.maps.MapLoader;
 import net.wieku.jhexagon.resources.FontManager;
+import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
 import java.util.ArrayList;
 
@@ -55,6 +56,8 @@ public class Main extends Game{
 
 
 	public static void main(String[] args) {
+
+		SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
 
 		conf = new LwjglApplicationConfiguration();
 		conf.width = 1024;

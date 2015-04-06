@@ -77,10 +77,12 @@ public enum FontManager{
 				FreeTypeFontParameter pam = new FreeTypeFontParameter();
 				pam.size = 16;
 				pam.genMipMaps = true;
-				pam.borderColor = Color.BLACK;//new Color(0.5f, 0.5f, 0.5f, 1f);
-				pam.borderWidth = 1f;
-				//pam.shadowOffsetX = 2;
-				//pam.shadowOffsetY = 2;
+
+				//pam.borderColor = Color.BLACK;//new Color(0.5f, 0.5f, 0.5f, 1f);
+				pam.shadowColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+				//pam.borderWidth = 1f;
+				pam.shadowOffsetX = 2;
+				pam.shadowOffsetY = 2;
 				pam.magFilter = TextureFilter.Nearest;
 				pam.minFilter = TextureFilter.MipMapNearestNearest;
 				pam.characters = chars;
