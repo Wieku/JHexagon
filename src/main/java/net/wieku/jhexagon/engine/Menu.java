@@ -20,6 +20,7 @@ import net.wieku.jhexagon.engine.camera.SkewCamera;
 import net.wieku.jhexagon.maps.Map;
 import net.wieku.jhexagon.utils.GUIHelper;
 import net.wieku.jhexagon.utils.ShapeRenderer3D;
+import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -78,7 +79,10 @@ public class Menu implements Screen {
 		CurrentMap.skew = 0;
 		camera.orbit(180f * delta);
 		shapeRenderer.setProjectionMatrix(camera.combined);
-		background.draw(shapeRenderer, delta);
+		shapeRenderer.begin(ShapeType.Filled);
+		background.update(delta);
+		background.render(shapeRenderer, delta, true);
+		shapeRenderer.end();
 
 		pane.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 

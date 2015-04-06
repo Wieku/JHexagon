@@ -12,7 +12,7 @@ import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
 /**
  * @author Sebastian Krajewski on 21.03.15.
  */
-public class Background {
+public class Background implements Renderer{
 
 	public Background(){}
 
@@ -22,7 +22,54 @@ public class Background {
 
 	float delta1;
 
-	public void draw(ShapeRenderer3D renderer, float delta) {
+	@Override
+	public void render(ShapeRenderer3D renderer, float delta, boolean shadows) {
+
+		if(shadows)
+			for(float i = 0; i < CurrentMap.sides; ++i) {
+
+				if(CurrentMap.colors.size() > 0){
+					HColor col = CurrentMap.colors.get(((int)i + CurrentMap.colorOffset) % CurrentMap.colors.size());
+					tmpC.set(col.r, col.g, col.b, col.a);
+					if(i+1==CurrentMap.sides && CurrentMap.sides % 2 == 1)
+						tmpC.lerp(Color.GRAY, 0.5f);
+					renderer.setColor(tmpC);
+				} else {
+					renderer.setColor(1, 1, 1, 1);
+				}
+
+				tmp.set(0, Main.diagonal * 2).rotate(i / CurrentMap.sides * -360f);
+				tmp2.set(0, Main.diagonal * 2).rotate((i - 1) / CurrentMap.sides * -360f);
+
+				renderer.triangle(0, 0, tmp.x, tmp.y, tmp2.x, tmp2.y);
+
+			}
+
+	}
+
+	@Override
+	public void update(float delta){
+		CurrentMap.colors.forEach(o -> o.update(delta));
+
+		if((delta1 += delta) >= CurrentMap.colorSwitch){
+
+			++CurrentMap.colorOffset;
+
+			if(CurrentMap.colorOffset == CurrentMap.colors.size()){
+				CurrentMap.colorOffset = 0;
+			}
+
+			delta1 = 0;
+		}
+	}
+
+	@Override
+	public int getIndex(){
+		return 0;
+	}
+
+	/*
+	public void render(ShapeRenderer3D renderer, float delta, boolean shadows) {
 
 		renderer.identity();
 		renderer.scale(Game.scale, Game.scale, Game.scale);
@@ -63,5 +110,5 @@ public class Background {
 		renderer.end();
 
 	}
-
+	 */
 }

@@ -19,6 +19,7 @@ public abstract class CurrentMap {
 
 	public static float difficulty = 1f;
 	public static float levelIncrement = 15f;
+	public static float delayMult = 1f;
 	public static float speed = 2.65f ;
 	public static float currentTime = 0f;
 
@@ -27,6 +28,12 @@ public abstract class CurrentMap {
 	public static int minSides = 5;
 	public static int maxSides = 7;
 	public static boolean mustChangeSides = false;
+
+	/**pulse*/
+	public static float pulseMin = 1.0f;
+	public static float pulseMax = 1.2f;
+	public static float pulseDelay = 0.5f;
+	public static float beatPulse = 1.0f;
 
 	/**colors*/
 	public static ArrayList<HColor> colors = new ArrayList<>();
@@ -62,6 +69,7 @@ public abstract class CurrentMap {
 		
 		difficulty = 1f;
 		levelIncrement = 15f;
+		delayMult = 1f;
 		speed = 1f ;
 		currentTime = 0f;
 		
@@ -70,7 +78,13 @@ public abstract class CurrentMap {
 		minSides = 5;
 		maxSides = 7;
 		mustChangeSides = false;
-		
+
+		/**pulse*/
+		pulseMin = 1.0f;
+		pulseMax = 1.2f;
+		pulseDelay = 0.5f;
+		beatPulse = 1.0f;
+
 		/**colors*/
 		colors.clear();
 		colorPulse = 3f;
@@ -132,6 +146,10 @@ public abstract class CurrentMap {
 		CurrentMap.levelIncrement = levelIncrement;
 	}
 
+	public static void setDelayMult(float delay) {
+		CurrentMap.delayMult = delay;
+	}
+
 	public static void setSpeed(float speed) {
 		CurrentMap.speed = speed;
 	}
@@ -154,6 +172,18 @@ public abstract class CurrentMap {
 
 	public static void setMustChangeSides(boolean mustChangeSides) {
 		CurrentMap.mustChangeSides = mustChangeSides;
+	}
+
+	public static void setPulseMin(float pulseMin) {
+		CurrentMap.pulseMin = pulseMin;
+	}
+
+	public static void setPulseMax(float pulseMax) {
+		CurrentMap.pulseMax = pulseMax;
+	}
+
+	public static void setPulseDelay(float pulseDelay) {
+		CurrentMap.pulseDelay = pulseDelay;
 	}
 
 	public static void setColors(ArrayList<HColor> colors) {

@@ -42,8 +42,7 @@ public class SkewCamera extends PerspectiveCamera {
 		currentRotation += rotation;
 		currentRotation = (currentRotation >= 360f ? currentRotation - 360f : currentRotation);
 
-		float skw = 40f + 50f * (CurrentMap.maxSkew - CurrentMap.skew - 0.0001f);
-
+		float skw = 40f + 50f - 50f * CurrentMap.skew;
 
 		if(currentRumbleTime <= rumbleTime) {
 			currentRumblePower = rumblePower * ((rumbleTime - currentRumbleTime) / rumbleTime);

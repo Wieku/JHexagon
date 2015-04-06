@@ -13,7 +13,7 @@ public abstract class Patterns {
 	}
 	//getRandomDir: returns either 1 or -1
 
-	static float THICKNESS = 40f;
+	public static float THICKNESS = 40f;
 
 	public static int getRandomDir(){
 		if (random(0, 100) > 50) return 1;
@@ -27,10 +27,10 @@ public abstract class Patterns {
 	public static int getRandomSide() { return random(0, CurrentMap.sides - 1); }
 
 	//getPerfectDelayDM: returns getPerfectDelay calculated with difficulty mutliplier
-	public static float getPerfectDelay(float mThickness) { return mThickness / (5.02f * CurrentMap.speed) * 1.1f/*u_getDelayMultDM()*/; }
+	public static float getPerfectDelay(float mThickness) { return mThickness / (5.02f * CurrentMap.speed) * CurrentMap.delayMult/*u_getDelayMultDM()*/; }
 
 	//getPerfectDelayDM: returns getPerfectDelay calculated with difficulty mutliplier
-	public static float getPerfectDelayDM(float mThickness) { return mThickness / (5.02f * CurrentMap.speed) * 1.1f/*u_getDelayMultDM()*/; }
+	public static float getPerfectDelayDM(float mThickness) { return mThickness / (5.02f * CurrentMap.speed) * CurrentMap.delayMult/*u_getDelayMultDM()*/; }
 
 	//getPerfectThickness: returns a good THICKNESS value in relation to human reflexes
 	public static float getPerfectThickness(float mThickness) { return mThickness * CurrentMap.speed; }

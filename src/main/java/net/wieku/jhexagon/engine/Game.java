@@ -19,9 +19,12 @@ import net.wieku.jhexagon.resources.ArchiveFileHandle;
 import net.wieku.jhexagon.sound.AudioPlayer;
 import net.wieku.jhexagon.utils.GUIHelper;
 import net.wieku.jhexagon.utils.ShapeRenderer3D;
+import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
 
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 /**
  * @author Sebastian Krajewski on 28.03.15.
@@ -48,6 +51,8 @@ public class Game implements Screen{
 	Sound go;
 	Sound death;
 	Sound gameOver;
+
+	LinkedList<Renderer> renderers = new LinkedList<>();
 
 
 	int width, height;
@@ -87,11 +92,19 @@ public class Game implements Screen{
 			death = Gdx.audio.newSound(Gdx.files.internal("assets/sound/death.ogg"));
 			gameOver = Gdx.audio.newSound(Gdx.files.internal("assets/sound/gameOver.ogg"));
 
+			addRenderer(center);
+			addRenderer(wallRenderer);
+			addRenderer(player);
 
 			start(map.info.startTimes[0]);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void addRenderer(Renderer renderer){
+		renderers.add(renderer);
+		renderers.sort((o1, o2) -> Integer.compare(o1.getIndex(), o2.getIndex()));
 	}
 
 
@@ -110,7 +123,28 @@ public class Game implements Screen{
 
 		renderer.setProjectionMatrix(camera.combined);
 
-		background.draw(renderer, Gdx.graphics.getDeltaTime());
+		renderer.begin(ShapeType.Filled);
+		background.render(renderer, delta, true);
+		renderer.end();
+
+		for(int j = 0; j < CurrentMap.layers; ++j){
+			renderer.identity();
+			renderer.translate(0, -j * CurrentMap.depth, 0);
+			renderer.begin(ShapeType.Filled);
+			for(Renderer render : renderers){
+				render.render(renderer, delta, true);
+			}
+			renderer.end();
+		}
+
+		renderer.identity();
+		renderer.begin(ShapeType.Filled);
+		for(Renderer render : renderers){
+			render.render(renderer, delta, false);
+		}
+		renderer.end();
+
+		/*background.draw(renderer, Gdx.graphics.getDeltaTime());
 
 		wallRenderer.drawWallsShadow(renderer, CurrentMap.wallTimeline.getObjects());
 		center.drawShadow(renderer, Gdx.graphics.getDeltaTime());
@@ -122,7 +156,7 @@ public class Game implements Screen{
 		wallRenderer.drawWalls(renderer, CurrentMap.wallTimeline.getObjects());
 		renderer.scale(scale, scale, scale);
 		center.draw(renderer, Gdx.graphics.getDeltaTime());
-		player.draw(renderer, Gdx.graphics.getDeltaTime());
+		player.draw(renderer, Gdx.graphics.getDeltaTime());*/
 
 		message.setPosition((stage.getWidth() - message.getWidth())/2, (stage.getHeight() - message.getHeight()) * 2.5f / 3);
 
@@ -156,7 +190,7 @@ public class Game implements Screen{
 
 	public void start(float startTime){
 
-		delta0 = delta1 = delta2 = delta3 = 0;
+		delta0 = delta1 = delta4 = delta3 = 0;
 
 		CurrentMap.currentTime = 0f;
 		CurrentMap.reset();
@@ -215,10 +249,12 @@ public class Game implements Screen{
 
 		this.delta0 += delta;
 		while (this.delta0 >= (1f / 60)) {
-
+			renderers.forEach(o -> o.update(1f/60));
+			background.update(1f / 60);
 			updateText(1f / 60);
 			updateRotation(1f / 60);
 			updateSkew(1f / 60);
+			updatePulse(1f/60);
 
 			if (!player.dead) {
 				Wall.updatePulse();
@@ -317,6 +353,22 @@ public class Game implements Screen{
 		camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
 		fastRotate = Math.max(0, fastRotate - 1f);
 		if(fastRotate == 0) CurrentMap.isFastRotation = false;
+	}
+
+	float delta4;
+	public void updatePulse(float delta){
+
+		if(player.dead) return;
+
+		if(delta4 <= 0){
+			CurrentMap.beatPulse = CurrentMap.pulseMax;
+			delta4 = CurrentMap.pulseDelay;
+		}
+
+		delta4 -= delta;
+
+		if(CurrentMap.beatPulse > CurrentMap.pulseMin) scale = CurrentMap.beatPulse -= 1.2f * delta;
+
 	}
 
 	float getSaturated(float mValue) { return Math.max(0.f, Math.min(1.f, mValue)); }
