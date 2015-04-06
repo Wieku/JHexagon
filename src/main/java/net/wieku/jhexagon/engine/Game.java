@@ -71,12 +71,14 @@ public class Game implements Screen{
 		stage = new Stage(new ScreenViewport());
 		stage.getViewport().update(width, height, true);
 
-		fps = new Label("", GUIHelper.getLabelStyle(new Color(0, 0, 0, 0.5f), Color.WHITE, 14));
+		fps = new Label("", GUIHelper.getLabelStyle(/*new Color(0, 0, 0, 0.5f),*/ Color.WHITE, 14));
 		fps.layout();
+		fps.setX(2);
 		stage.addActor(fps);
 
-		time = new Label("", GUIHelper.getLabelStyle(new Color(0, 0, 0, 0.5f), Color.WHITE, 14));
+		time = new Label("", GUIHelper.getLabelStyle(/*new Color(0, 0, 0, 0.5f),*/ Color.WHITE, 14));
 		time.layout();
+		time.setX(2);
 		stage.addActor(time);
 
 		message = new Label("", GUIHelper.getLabelStyle(new Color(0.9f, 0.9f, 0.9f, 1), 35));
@@ -168,10 +170,7 @@ public class Game implements Screen{
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-
 		camera.updateViewport(width, height);
-
-		fps.setPosition(0, 0);
 	}
 
 	@Override
@@ -215,6 +214,7 @@ public class Game implements Screen{
 	float fastRotate = 0f;
 	float delta0;
 	boolean escClick = false;
+	Color tmpColor = new Color();
 	public void updateGame(float delta){
 
 		updateTimeline(delta);
@@ -249,8 +249,8 @@ public class Game implements Screen{
 
 		this.delta0 += delta;
 		while (this.delta0 >= (1f / 60)) {
-			renderers.forEach(o -> o.update(1f/60));
-			background.update(1f / 60);
+			renderers.forEach(o -> o.update(1f / 60));
+
 			updateText(1f / 60);
 			updateRotation(1f / 60);
 			updateSkew(1f / 60);
@@ -258,6 +258,12 @@ public class Game implements Screen{
 
 			if (!player.dead) {
 				Wall.updatePulse();
+				background.update(1f / 60);
+				tmpColor.set(CurrentMap.walls.r, CurrentMap.walls.g, CurrentMap.walls.b, CurrentMap.walls.a);
+				fps.getStyle().fontColor = tmpColor;
+				time.getStyle().fontColor = tmpColor;
+				message.getStyle().fontColor = tmpColor;
+
 			}
 
 			scale = Math.max(scale - 0.01f, 1f);
@@ -285,7 +291,7 @@ public class Game implements Screen{
 		}
 
 		fps.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
-		time.setText("Time: " + timeFormat.format(CurrentMap.currentTime));
+		time.setText("Time: " + timeFormat.format(CurrentMap.currentTime) + (player.dead?"\nYou died! Press \"Space\" to restart!":""));
 
 		fps.pack();
 		time.pack();

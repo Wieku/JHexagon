@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 public enum FontManager{
 
-	MAIN("Pixel-UniCode");
+	MAIN("ffforward"/*"Pixel-UniCode"*/);
 
 	protected static HashMap<FontManager, FontData> fonts = new HashMap<>();
 	protected String name;
@@ -44,7 +44,7 @@ public enum FontManager{
 			throw new GdxRuntimeException("Failed to create font", e);
 		}
 		BitmapFont font = new BitmapFont(dataCopy, fonts.get(val).regions, false);
-		font.setScale((float) size / 7, (float) size / 8);
+		font.setScale((float) size / /*7*/11, (float) size / /*8*/12);
 		return font;
 	}
 	
@@ -77,9 +77,10 @@ public enum FontManager{
 				FreeTypeFontParameter pam = new FreeTypeFontParameter();
 				pam.size = 16;
 				pam.genMipMaps = true;
-				pam.shadowColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-				pam.shadowOffsetX = 1;
-				pam.shadowOffsetY = 1;
+				pam.borderColor = Color.BLACK;//new Color(0.5f, 0.5f, 0.5f, 1f);
+				pam.borderWidth = 1f;
+				//pam.shadowOffsetX = 2;
+				//pam.shadowOffsetY = 2;
 				pam.magFilter = TextureFilter.Nearest;
 				pam.minFilter = TextureFilter.MipMapNearestNearest;
 				pam.characters = chars;

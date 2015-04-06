@@ -37,6 +37,7 @@ public abstract class CurrentMap {
 
 	/**colors*/
 	public static ArrayList<HColor> colors = new ArrayList<>();
+	public static float menuColor = 0f;
 	public static float colorPulse = 3f;
 	public static int colorOffset = 0;
 	public static float colorSwitch = 1f;
