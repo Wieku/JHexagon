@@ -46,6 +46,7 @@ public class Menu implements Screen {
 	Label music;
 
 	Table info;
+	Label conf;
 
 	SkewCamera camera = new SkewCamera();
 	ShapeRenderer3D shapeRenderer;
@@ -125,6 +126,9 @@ public class Menu implements Screen {
 		info.setPosition(5, 5);
 		stage.addActor(info);
 
+		conf = new Label("Press F3 to open settings", GUIHelper.getLabelStyle(Color.WHITE, 12));
+		conf.pack();
+		stage.addActor(conf);
 		if(!maps.isEmpty()) selectIndex(mapIndex);
 
 	}
@@ -151,6 +155,7 @@ public class Menu implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
+		conf.setPosition(2, height - 2 - conf.getHeight());
 	}
 
 	@Override
