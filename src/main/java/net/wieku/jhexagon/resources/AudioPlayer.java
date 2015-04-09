@@ -1,4 +1,4 @@
-package net.wieku.jhexagon.sound;
+package net.wieku.jhexagon.resources;
 
 import java.io.File;
 import java.io.FileNotFoundException;

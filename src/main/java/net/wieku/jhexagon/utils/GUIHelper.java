@@ -21,8 +21,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.util.HashMap;
+
 public class GUIHelper{
-	
+
+	public static HashMap<Integer, LabelStyle> styles = new HashMap<>();
+
+
 	public static Table getTable(Color background){
 		Table table = new Table();
 		table.setBackground(getTxRegion(background));
@@ -34,14 +39,16 @@ public class GUIHelper{
 		stl.font =  FontManager.getFont(FontManager.MAIN, size);
 		stl.font.setMarkupEnabled(true);
 		stl.fontColor = color.cpy();
+		styles.put(size, stl);
 		return stl;
 	}
 	
 	public static LabelStyle getLabelStyle(Color background, Color color, int size){
 		LabelStyle stl = new LabelStyle();
 		stl.background = getTxRegion(background);
-		stl.font =  FontManager.getFont(FontManager.MAIN, size);
+		stl.font = FontManager.getFont(FontManager.MAIN, size);
 		stl.fontColor = color.cpy();
+		styles.put(size, stl);
 		return stl;
 	}
 	

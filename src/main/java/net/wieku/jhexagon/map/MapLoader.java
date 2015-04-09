@@ -1,21 +1,15 @@
-package net.wieku.jhexagon.maps;
+package net.wieku.jhexagon.map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.wieku.jhexagon.api.MapScript;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

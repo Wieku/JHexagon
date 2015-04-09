@@ -1,31 +1,29 @@
-package net.wieku.jhexagon.engine;
+package net.wieku.jhexagon.engine.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import net.wieku.jhexagon.Main;
 import net.wieku.jhexagon.api.CurrentMap;
+import net.wieku.jhexagon.engine.Background;
+import net.wieku.jhexagon.engine.Game;
+import net.wieku.jhexagon.engine.Settings;
 import net.wieku.jhexagon.engine.camera.SkewCamera;
-import net.wieku.jhexagon.maps.Map;
+import net.wieku.jhexagon.engine.menu.options.Options;
+import net.wieku.jhexagon.map.Map;
 import net.wieku.jhexagon.utils.GUIHelper;
 import net.wieku.jhexagon.utils.ShapeRenderer3D;
 import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
@@ -37,7 +35,9 @@ public class Menu implements Screen {
 	ArrayList<Map> maps;
 	//ArrayList<MenuMap> actors = new ArrayList<>();
 	Stage stage;
-	Sound beep;
+	static Sound beep;
+
+	public static Options options;
 
 	Label number;
 	Label name;
@@ -48,10 +48,10 @@ public class Menu implements Screen {
 	Table info;
 
 	SkewCamera camera = new SkewCamera();
-	ShapeRenderer3D shapeRenderer = new ShapeRenderer3D();
+	ShapeRenderer3D shapeRenderer;
 	Background background = new Background();
 
-	private int mapIndex = 0;
+	private static int mapIndex = 0;
 
 	static Menu instance;
 
@@ -60,6 +60,7 @@ public class Menu implements Screen {
 		instance = this;
 		beep = Gdx.audio.newSound(Gdx.files.internal("assets/sound/beep.ogg"));
 
+		options = new Options();
 		stage = new Stage(new ScreenViewport());
 		stage.addListener(new InputListener(){
 			@Override
@@ -75,7 +76,7 @@ public class Menu implements Screen {
 						CurrentMap.reset();
 						maps.get(mapIndex).script.initColors();
 
-						beep.play();
+						playBeep();
 					}
 
 					if(keycode == Keys.RIGHT){
@@ -87,12 +88,17 @@ public class Menu implements Screen {
 						CurrentMap.reset();
 						maps.get(mapIndex).script.initColors();
 
-						beep.play();
+						playBeep();
 
 					}
 
+					if(keycode == Keys.F3){
+						playBeep();
+						Main.getInstance().setScreen(options);
+					}
+
 					if(keycode == Keys.ENTER){
-						beep.play();
+						playBeep();
 						Gdx.input.setInputProcessor(null);
 						Main.getInstance().setScreen(new Game(maps.get(mapIndex)));
 					}
@@ -100,7 +106,7 @@ public class Menu implements Screen {
 				}
 
 				if(keycode == Keys.ESCAPE){
-					beep.play();
+					playBeep();
 					Gdx.app.exit();
 				}
 
@@ -149,13 +155,14 @@ public class Menu implements Screen {
 
 	@Override
 	public void show() {
-		Main.conf.foregroundFPS = 120;
+		Main.config.foregroundFPS = 120;
 
 		CurrentMap.reset();
 		maps.get(mapIndex).script.initColors();
 
 		Gdx.input.setInputProcessor(stage);
-
+		if(shapeRenderer != null) shapeRenderer.dispose();
+		shapeRenderer = new ShapeRenderer3D();
 	}
 
 
@@ -171,8 +178,12 @@ public class Menu implements Screen {
 		info.setPosition(5, 5);
 	}
 
+	public static void playBeep(){
+		long id = beep.play();
+		beep.setVolume(id, (float) Settings.instance.masterVolume * (float) Settings.instance.effectVolume / 10000f);
+	}
 
-	public static Screen getInstance() {
+	public static Menu getInstance() {
 		return instance;
 	}
 

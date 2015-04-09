@@ -1,4 +1,4 @@
-package net.wieku.jhexagon.maps;
+package net.wieku.jhexagon.map;
 
 import net.wieku.jhexagon.api.MapScript;
 

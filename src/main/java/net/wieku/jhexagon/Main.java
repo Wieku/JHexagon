@@ -1,15 +1,24 @@
 package net.wieku.jhexagon;
 
+import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import net.wieku.jhexagon.engine.Menu;
-import net.wieku.jhexagon.maps.Map;
-import net.wieku.jhexagon.maps.MapLoader;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import net.wieku.jhexagon.engine.Settings;
+import net.wieku.jhexagon.engine.menu.Menu;
+import net.wieku.jhexagon.map.Map;
+import net.wieku.jhexagon.map.MapLoader;
 import net.wieku.jhexagon.resources.FontManager;
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -17,21 +26,29 @@ import java.util.ArrayList;
  */
 public class Main extends Game{
 
-	public static LwjglApplicationConfiguration conf;
+	public static LwjglApplicationConfiguration config;
 	int width, height;
 	ArrayList<Map> maps;
 	public static float diagonal = 1600f;
 	static Main instance = new Main();
+	static LwjglApplication app;
+	private Main(){
+
+	}
 
 	public static Main getInstance(){
 		return instance;
 	}
 
+	static boolean restarted = false;
+
 	@Override
 	public void create() {
 		FontManager.init();
 		maps = MapLoader.load();
-		setScreen(new Menu(maps));
+		new Menu(maps);
+		setScreen(restarted ? Menu.options : Menu.getInstance());
+
 	}
 
 
@@ -52,6 +69,16 @@ public class Main extends Game{
 		super.dispose();
 		if(maps != null)
 			maps.forEach(m->MapLoader.closeJar(m.file));
+
+		if(Settings.instance != null){
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			try {
+				Files.write(gson.toJson(Settings.instance), new File("settings.json"), Charsets.UTF_8);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 
@@ -59,14 +86,26 @@ public class Main extends Game{
 
 		SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
 
-		conf = new LwjglApplicationConfiguration();
-		conf.width = 1024;
-		conf.height = 768;
-		conf.title = "JHexagon";
-		conf.foregroundFPS = 120;
-		conf.samples = 8;
-		conf.vSyncEnabled = false;
-		new LwjglApplication(instance, conf);
+		try {
+			Gson gson = new GsonBuilder().create();
+			File file = new File("settings.json");
+			if(!file.exists())
+				Settings.instance = new Settings();
+			else
+				Settings.instance = gson.fromJson(new FileReader(file), Settings.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		config = new LwjglApplicationConfiguration();
+		config.width = 1024;
+		config.height = 768;
+		config.title = "JHexagon";
+		config.foregroundFPS = 120;
+		config.addIcon("assets/icon.png", FileType.Internal);
+		config.samples = Settings.instance.msaa;
+		config.vSyncEnabled = Settings.instance.vSync;
+		app = new LwjglApplication(instance, config);
 
 	}
 

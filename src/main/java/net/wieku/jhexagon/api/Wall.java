@@ -40,7 +40,9 @@ public class Wall extends TimelineObject{
 	@Override
 	public void update(float delta){
 
-		if((delta0 += delta) >= 1f / 60){
+		delta0 += delta;
+
+		while(delta0 >= 1f / 60){
 
 			if(!visible){
 				position = Main.diagonal;
@@ -61,7 +63,7 @@ public class Wall extends TimelineObject{
 			tmp3.set(0, Math.max(0, position) * pulseSpeed).rotate(-angle2);
 			tmp4.set(0, Math.max(0, position + thickness) * pulseSpeed).rotate(-angle2);
 
-			delta0 = 0;
+			delta0 -= 0.016666668f;
 		}
 
 	}

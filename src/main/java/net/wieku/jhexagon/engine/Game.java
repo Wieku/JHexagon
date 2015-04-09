@@ -14,16 +14,16 @@ import net.wieku.jhexagon.Main;
 import net.wieku.jhexagon.api.CurrentMap;
 import net.wieku.jhexagon.api.Wall;
 import net.wieku.jhexagon.engine.camera.SkewCamera;
-import net.wieku.jhexagon.maps.Map;
+import net.wieku.jhexagon.engine.menu.Menu;
+import net.wieku.jhexagon.map.Map;
 import net.wieku.jhexagon.resources.ArchiveFileHandle;
-import net.wieku.jhexagon.sound.AudioPlayer;
+import net.wieku.jhexagon.resources.AudioPlayer;
 import net.wieku.jhexagon.utils.GUIHelper;
 import net.wieku.jhexagon.utils.ShapeRenderer3D;
 import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
 
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
-import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
@@ -62,6 +62,11 @@ public class Game implements Screen{
 	private int inc = 1;
 
 	DecimalFormat timeFormat = new DecimalFormat("0.000");
+
+	public void playSound(Sound sound){
+		long id = sound.play();
+		sound.setVolume(id, (float) Settings.instance.masterVolume * (float) Settings.instance.effectVolume / 10000f);
+	}
 
 	public Game (Map map){
 		this.map = map;
@@ -113,7 +118,7 @@ public class Game implements Screen{
 	@Override
 	public void show() {
 
-		Main.conf.foregroundFPS = 0;
+		Main.config.foregroundFPS = 0;
 	}
 
 	@Override
@@ -145,20 +150,6 @@ public class Game implements Screen{
 			render.render(renderer, delta, false);
 		}
 		renderer.end();
-
-		/*background.draw(renderer, Gdx.graphics.getDeltaTime());
-
-		wallRenderer.drawWallsShadow(renderer, CurrentMap.wallTimeline.getObjects());
-		center.drawShadow(renderer, Gdx.graphics.getDeltaTime());
-		player.drawShadow(renderer, Gdx.graphics.getDeltaTime());
-
-		renderer.identity();
-		renderer.translate(0, 0, 0);
-
-		wallRenderer.drawWalls(renderer, CurrentMap.wallTimeline.getObjects());
-		renderer.scale(scale, scale, scale);
-		center.draw(renderer, Gdx.graphics.getDeltaTime());
-		player.draw(renderer, Gdx.graphics.getDeltaTime());*/
 
 		message.setPosition((stage.getWidth() - message.getWidth())/2, (stage.getHeight() - message.getHeight()) * 2.5f / 3);
 
@@ -194,7 +185,7 @@ public class Game implements Screen{
 		CurrentMap.currentTime = 0f;
 		CurrentMap.reset();
 		player.reset();
-		audioPlayer.setVolume(0.2f);
+		audioPlayer.setVolume((float) Settings.instance.masterVolume * (float) Settings.instance.musicVolume / 10000f);
 		audioPlayer.play();
 		if(startTime != 0)
 			audioPlayer.setPosition(startTime);
@@ -204,7 +195,7 @@ public class Game implements Screen{
 		map.script.onInit();
 		map.script.initColors();
 		map.script.initEvents();
-		go.play();
+		playSound(go);
 	}
 
 	public void restart(){
@@ -222,8 +213,8 @@ public class Game implements Screen{
 		if(player.dead){
 
 			if (audioPlayer != null && !audioPlayer.hasEnded()) {
-				death.play();
-				gameOver.play();
+				playSound(death);
+				playSound(gameOver);
 				camera.rumble(5f, 2f);
 				audioPlayer.stop();
 			}
@@ -322,7 +313,7 @@ public class Game implements Screen{
 
 			fastRotate = CurrentMap.fastRotate;
 
-			levelUp.play();
+			playSound(levelUp);
 
 			CurrentMap.isFastRotation = true;
 			CurrentMap.rotationSpeed += (CurrentMap.rotationSpeed > 0 ? CurrentMap.rotationIncrement: -CurrentMap.rotationIncrement );
@@ -336,7 +327,7 @@ public class Game implements Screen{
 
 		if (CurrentMap.wallTimeline.isEmpty() && CurrentMap.mustChangeSides) {
 			CurrentMap.sides = MathUtils.random(CurrentMap.minSides, CurrentMap.maxSides);
-			sides.play();
+			playSound(sides);
 			CurrentMap.mustChangeSides = false;
 		}
 
@@ -356,7 +347,7 @@ public class Game implements Screen{
 			}
 		}
 
-		camera.orbit(CurrentMap.rotationSpeed * 360f / 60 + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
+		camera.orbit(CurrentMap.rotationSpeed * 360f * delta + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
 		fastRotate = Math.max(0, fastRotate - 1f);
 		if(fastRotate == 0) CurrentMap.isFastRotation = false;
 	}
