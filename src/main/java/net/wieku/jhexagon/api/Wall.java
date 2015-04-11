@@ -32,24 +32,27 @@ public class Wall extends TimelineObject{
 	}
 
 	public static float pulseSpeed = 1f;
+	private static float scale = 0f;
 
 	public static void updatePulse(){
-		pulseSpeed = Math.max(1f, Math.abs((float)Math.sin(Math.toRadians(CurrentMap.currentTime * 180))) * 1.4f);
+		//pulseSpeed = Math.max(1f, Math.abs((float)Math.sin(Math.toRadians(CurrentMap.currentTime * 180))) * 1.4f);
 	}
 
 	@Override
 	public void update(float delta){
 
-		delta0 += delta;
+		pulseSpeed = CurrentMap.pulse / CurrentMap.pulseMin;
 
-		while(delta0 >= 1f / 60){
+	//	delta0 += delta;
+
+		//while(delta0 >= 1f / 60){
 
 			if(!visible){
 				position = Main.diagonal;
 				visible = true;
 			}
 
-			position -= speed * CurrentMap.speed * 5;
+			position -= speed * CurrentMap.speed * 5 * 60f * delta;
 
 			if (position + thickness <= 0){
 				setToRemove(true);
@@ -59,12 +62,14 @@ public class Wall extends TimelineObject{
 			float angle2 = (side + 1) / (float) CurrentMap.sides * 360f;
 
 			tmp.set(0, Math.max(0, position) * pulseSpeed).rotate(-angle1);
-			tmp2.set(0, Math.max(0, position + thickness) * pulseSpeed).rotate(-angle1);
+			tmp2.set(0, Math.max(0, position + thickness + CurrentMap.wallSkewLeft) * pulseSpeed).rotate(-angle1);
 			tmp3.set(0, Math.max(0, position) * pulseSpeed).rotate(-angle2);
-			tmp4.set(0, Math.max(0, position + thickness) * pulseSpeed).rotate(-angle2);
+			tmp4.set(0, Math.max(0, position + thickness + CurrentMap.wallSkewRight) * pulseSpeed).rotate(-angle2);
 
+/*
 			delta0 -= 0.016666668f;
 		}
+*/
 
 	}
 

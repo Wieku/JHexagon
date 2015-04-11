@@ -1,7 +1,5 @@
 package net.wieku.jhexagon.utils;
 
-import net.wieku.jhexagon.resources.FontManager;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -20,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import net.wieku.jhexagon.resources.FontManager;
 
 import java.util.HashMap;
 

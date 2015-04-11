@@ -1,9 +1,9 @@
 package net.wieku.jhexagon.engine;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import net.wieku.jhexagon.api.CurrentMap;
 import net.wieku.jhexagon.api.Wall;
-import net.wieku.jhexagon.utils.ShapeRenderer3D;
 
 /**
  * @author Sebastian Krajewski on 21.03.15.
@@ -13,7 +13,7 @@ public class WallRenderer implements Renderer {
 	Color shadow = new Color();
 
 	@Override
-	public void render(ShapeRenderer3D renderer, float delta, boolean shadows){
+	public void render(ShapeRenderer renderer, float delta, boolean shadows){
 
 		if(!shadows)
 			renderer.setColor(CurrentMap.walls.r, CurrentMap.walls.g, CurrentMap.walls.b, CurrentMap.walls.a);

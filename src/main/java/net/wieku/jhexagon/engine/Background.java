@@ -1,13 +1,11 @@
 package net.wieku.jhexagon.engine;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import net.wieku.jhexagon.Main;
 import net.wieku.jhexagon.api.CurrentMap;
 import net.wieku.jhexagon.api.HColor;
-import net.wieku.jhexagon.utils.ShapeRenderer3D;
-import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
 
 /**
  * @author Sebastian Krajewski on 21.03.15.
@@ -23,7 +21,7 @@ public class Background implements Renderer{
 	float delta1;
 
 	@Override
-	public void render(ShapeRenderer3D renderer, float delta, boolean shadows) {
+	public void render(ShapeRenderer renderer, float delta, boolean shadows) {
 
 		if(shadows)
 			for(float i = 0; i < CurrentMap.sides; ++i) {

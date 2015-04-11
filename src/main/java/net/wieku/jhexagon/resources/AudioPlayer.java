@@ -1,12 +1,10 @@
 package net.wieku.jhexagon.resources;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 
-import com.badlogic.gdx.Gdx;
+import java.io.FileNotFoundException;
 
 
 public class AudioPlayer {

@@ -64,7 +64,7 @@ public class Graphics extends Section{
 		addButton(msaa);
 		addButton(exit);
 
-		add(new Label("Audio", GUIHelper.getLabelStyle(Color.WHITE, 22))).colspan(2).padLeft(20).padBottom(20).left().fillX().row();
+		add(new Label("Graphics", GUIHelper.getLabelStyle(Color.WHITE, 22))).colspan(2).padLeft(20).padBottom(20).left().fillX().row();
 		add(state).fillX().row();
 		add(msaa).fillX().row();
 		add(exit).fillX().colspan(2).padTop(22).row();

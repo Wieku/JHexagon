@@ -4,7 +4,6 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
  */
 public class Main extends Game{
 
+	public static final String version = "0.0.1";
 	public static LwjglApplicationConfiguration config;
 	int width, height;
 	ArrayList<Map> maps;
@@ -100,7 +100,7 @@ public class Main extends Game{
 		config = new LwjglApplicationConfiguration();
 		config.width = 1024;
 		config.height = 768;
-		config.title = "JHexagon";
+		config.title = "Hexagons! " + version + " - by Sebastian Krajewski";
 		config.foregroundFPS = 120;
 		config.addIcon("assets/icon.png", FileType.Internal);
 		config.samples = Settings.instance.msaa;

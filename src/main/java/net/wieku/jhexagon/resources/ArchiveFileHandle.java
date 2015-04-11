@@ -1,14 +1,14 @@
 package net.wieku.jhexagon.resources;
 
+import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import com.badlogic.gdx.Files.FileType;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /** @author MobiDevelop (https://gist.github.com/MobiDevelop/5514357)*/
 public class ArchiveFileHandle extends FileHandle {

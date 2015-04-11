@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -19,8 +20,6 @@ import net.wieku.jhexagon.map.Map;
 import net.wieku.jhexagon.resources.ArchiveFileHandle;
 import net.wieku.jhexagon.resources.AudioPlayer;
 import net.wieku.jhexagon.utils.GUIHelper;
-import net.wieku.jhexagon.utils.ShapeRenderer3D;
-import net.wieku.jhexagon.utils.ShapeRenderer3D.ShapeType;
 
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
@@ -34,7 +33,7 @@ public class Game implements Screen{
 	Map map;
 	AudioPlayer audioPlayer;
 
-	ShapeRenderer3D renderer;
+	ShapeRenderer renderer;
 	SkewCamera camera = new SkewCamera();
 	Stage stage;
 
@@ -54,6 +53,12 @@ public class Game implements Screen{
 
 	LinkedList<Renderer> renderers = new LinkedList<>();
 
+	private float rumbleX;
+	private float rumbleY;
+	private float rumbleTime = 0;
+	private float currentRumbleTime = 1;
+	private float rumblePower = 0;
+	private float currentRumblePower = 0;
 
 	int width, height;
 
@@ -71,7 +76,7 @@ public class Game implements Screen{
 	public Game (Map map){
 		this.map = map;
 
-		renderer = new ShapeRenderer3D();
+		renderer = new ShapeRenderer();
 
 		stage = new Stage(new ScreenViewport());
 		stage.getViewport().update(width, height, true);
@@ -130,14 +135,18 @@ public class Game implements Screen{
 
 		renderer.setProjectionMatrix(camera.combined);
 
-		renderer.begin(ShapeType.Filled);
+		renderer.identity();
+		renderer.rotate(1, 0, 0, 90);
+		renderer.translate(rumbleX, 0, rumbleY);
+		renderer.begin(ShapeRenderer.ShapeType.Filled);
 		background.render(renderer, delta, true);
 		renderer.end();
 
-		for(int j = 0; j < CurrentMap.layers; ++j){
+		for(int j = 1; j <= CurrentMap.layers; ++j){
 			renderer.identity();
-			renderer.translate(0, -j * CurrentMap.depth, 0);
-			renderer.begin(ShapeType.Filled);
+			renderer.translate(rumbleX, -j * CurrentMap.depth, rumbleY);
+			renderer.rotate(1, 0, 0, 90);
+			renderer.begin(ShapeRenderer.ShapeType.Filled);
 			for(Renderer render : renderers){
 				render.render(renderer, delta, true);
 			}
@@ -145,7 +154,9 @@ public class Game implements Screen{
 		}
 
 		renderer.identity();
-		renderer.begin(ShapeType.Filled);
+		renderer.rotate(1, 0, 0, 90);
+		renderer.translate(rumbleX, 0, rumbleY);
+		renderer.begin(ShapeRenderer.ShapeType.Filled);
 		for(Renderer render : renderers){
 			render.render(renderer, delta, false);
 		}
@@ -161,7 +172,6 @@ public class Game implements Screen{
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
-		camera.updateViewport(width, height);
 	}
 
 	@Override
@@ -180,7 +190,11 @@ public class Game implements Screen{
 
 	public void start(float startTime){
 
-		delta0 = delta1 = delta4 = delta3 = 0;
+		delta0 = delta1 = delta5 = delta4 = delta3 = 0;
+
+		rumblePower = 0;
+		rumbleTime = 1;
+		currentRumbleTime = 0;
 
 		CurrentMap.currentTime = 0f;
 		CurrentMap.reset();
@@ -189,8 +203,6 @@ public class Game implements Screen{
 		audioPlayer.play();
 		if(startTime != 0)
 			audioPlayer.setPosition(startTime);
-
-		camera.reset();
 
 		map.script.onInit();
 		map.script.initColors();
@@ -215,7 +227,7 @@ public class Game implements Screen{
 			if (audioPlayer != null && !audioPlayer.hasEnded()) {
 				playSound(death);
 				playSound(gameOver);
-				camera.rumble(5f, 2f);
+				rumble(15f, 2f);
 				audioPlayer.stop();
 			}
 
@@ -238,14 +250,27 @@ public class Game implements Screen{
 			escClick = false;
 		}
 
+		updateRotation(delta);
+
 		this.delta0 += delta;
 		while (this.delta0 >= (1f / 60)) {
 			renderers.forEach(o -> o.update(1f / 60));
 
 			updateText(1f / 60);
-			updateRotation(1f / 60);
 			updateSkew(1f / 60);
 			updatePulse(1f/60);
+
+			if(currentRumbleTime <= rumbleTime) {
+				currentRumblePower = rumblePower * ((rumbleTime - currentRumbleTime) / rumbleTime);
+
+				rumbleX = (MathUtils.random(1.0f) - 0.5f) * 2 * currentRumblePower;
+				rumbleY = (MathUtils.random(1.0f) - 0.5f) * 2 * currentRumblePower;
+
+				currentRumbleTime += 1f/60;
+			} else {
+				rumbleX = 0;
+				rumbleY = 0;
+			}
 
 			if (!player.dead) {
 				Wall.updatePulse();
@@ -257,12 +282,16 @@ public class Game implements Screen{
 
 			}
 
-			scale = Math.max(scale - 0.01f, 1f);
-
 			delta0 -= 0.016666668f;
 		}
 		if(!player.dead)
 			map.script.update(delta);
+	}
+
+	public void rumble(float power, float time) {
+		rumblePower = power;
+		rumbleTime = time;
+		currentRumbleTime = 0;
 	}
 
 	float delta1;
@@ -341,30 +370,46 @@ public class Game implements Screen{
 
 		if(player.dead) {
 			if(CurrentMap.rotationSpeed < 0){
-				CurrentMap.rotationSpeed = Math.min(-0.02f, CurrentMap.rotationSpeed + 0.002f);
+				CurrentMap.rotationSpeed = Math.min(-0.02f, CurrentMap.rotationSpeed + 0.002f * 60 * delta);
 			} else if(CurrentMap.rotationSpeed > 0) {
-				CurrentMap.rotationSpeed = Math.max(0.02f, CurrentMap.rotationSpeed - 0.002f);
+				CurrentMap.rotationSpeed = Math.max(0.02f, CurrentMap.rotationSpeed - 0.002f * 60 * delta);
 			}
 		}
 
-		camera.orbit(CurrentMap.rotationSpeed * 360f * delta + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
+		camera.orbit(CurrentMap.rotationSpeed * 360f *  delta + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
 		fastRotate = Math.max(0, fastRotate - 1f);
 		if(fastRotate == 0) CurrentMap.isFastRotation = false;
 	}
 
 	float delta4;
+	float delta5;
 	public void updatePulse(float delta){
 
 		if(player.dead) return;
 
 		if(delta4 <= 0){
-			CurrentMap.beatPulse = CurrentMap.pulseMax;
-			delta4 = CurrentMap.pulseDelay;
+			CurrentMap.beatPulse = CurrentMap.beatPulseMax;
+			delta4 = CurrentMap.beatPulseDelay;
 		}
 
 		delta4 -= delta;
 
-		if(CurrentMap.beatPulse > CurrentMap.pulseMin) scale = CurrentMap.beatPulse -= 1.2f * delta;
+		if(CurrentMap.beatPulse > CurrentMap.beatPulseMin) scale = CurrentMap.beatPulse -= 1.2f * delta;
+
+		if(delta5 <= 0){
+
+			if((CurrentMap.pulseDir < 0 && CurrentMap.pulse <= CurrentMap.pulseMin) || (CurrentMap.pulseDir > 0 && CurrentMap.pulse >= CurrentMap.pulseMax)){
+				CurrentMap.pulseDir *=-1;
+				delta5 = CurrentMap.pulseDelayMax;
+			}
+
+			CurrentMap.pulse += (CurrentMap.pulseDir > 0 ? CurrentMap.pulseSpeed : -CurrentMap.pulseSpeedR) * 60 * delta;
+
+			CurrentMap.pulse = MathUtils.clamp(CurrentMap.pulse, CurrentMap.pulseMin, CurrentMap.pulseMax);
+
+		}
+		//System.out.println(CurrentMap.pulse);
+		delta5 -= 60f * delta;
 
 	}
 

@@ -83,7 +83,8 @@ public class Options implements Screen {
 
 		Gdx.gl20.glClearColor(0, 0, 0, 1);
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
-		currentSection.setBounds(0, 0, Math.min(Gdx.graphics.getWidth(), 512), (float) Gdx.graphics.getHeight() * 2.25f / 3);
+
+		currentSection.setBounds(5, 0, Math.min(Gdx.graphics.getWidth(), 512), (float) Gdx.graphics.getHeight() * 2.25f / 3);
 		currentSection.layout();
 		message.setPosition(Gdx.graphics.getWidth() - 5 - message.getWidth(), 5);
 		stage.act(delta);
