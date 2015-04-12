@@ -98,6 +98,8 @@ public class Game implements Screen{
 		try {
 			audioPlayer = new AudioPlayer(new ArchiveFileHandle(map.file,map.info.audioFileName));
 
+
+
 			levelUp = Gdx.audio.newSound(Gdx.files.internal("assets/sound/levelUp.ogg"));
 			sides = Gdx.audio.newSound(Gdx.files.internal("assets/sound/beep.ogg"));
 			go = Gdx.audio.newSound(Gdx.files.internal("assets/sound/go.ogg"));
@@ -376,8 +378,8 @@ public class Game implements Screen{
 			}
 		}
 
-		camera.orbit(CurrentMap.rotationSpeed * 360f *  delta + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f);
-		fastRotate = Math.max(0, fastRotate - 1f);
+		camera.orbit(CurrentMap.rotationSpeed * 360f *  delta + (CurrentMap.rotationSpeed > 0 ? 1 : -1) * (getSmootherStep(0, CurrentMap.fastRotate, fastRotate) / 3.5f) * 17.f * 60 * delta);
+		fastRotate = Math.max(0, fastRotate - 60f * delta);
 		if(fastRotate == 0) CurrentMap.isFastRotation = false;
 	}
 
